@@ -7,7 +7,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 class Genus(models.IntegerChoices):
     MALE = 1, 'Male'
     FEMALE = 2, 'Female'
