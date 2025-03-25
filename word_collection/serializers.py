@@ -3,9 +3,11 @@ from rest_framework import serializers
 from .models import Word, Category
 
 class CategorySerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source = 'owner.username')
+
     class Meta:
         model = Category
-        fields = ['id', 'name']
+        fields = ['owner', 'id', 'name']
 
 class WordSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source = 'owner.username')
@@ -14,4 +16,4 @@ class WordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Word
-        fields = ['id', 'created_date_time', 'definition', 'translation', 'example', 'genus_id', 'genus_name', 'categories', 'usage_count']
+        fields = ['owner', 'id', 'created_date_time', 'definition', 'translation', 'example', 'genus_id', 'genus_name', 'categories', 'usage_count']

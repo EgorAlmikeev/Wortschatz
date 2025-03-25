@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
@@ -22,7 +21,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Category.objects.filter(Q(owner = self.request.user) | Q(owner = get_superuser_id))
+        return Category.objects.filter(owner = self.request.user)
     
     def perform_create(self, serializer):
         return serializer.save(owner = self.request.user)
