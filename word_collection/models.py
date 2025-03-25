@@ -2,7 +2,10 @@ from django.db import models
 from django.utils.timezone import now
 from django.contrib.auth.models import User
 
+from .utils import get_superuser_id
+
 class Category(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="categories", db_index=True, default=get_superuser_id)
     name = models.TextField(max_length=100)
 
     def __str__(self):
