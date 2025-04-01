@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Einloggen</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,28 +45,43 @@
         button {
             width: 90%;
             padding: 10px;
-            background-color: #007bff;
-            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             margin-top: 20px;
         }
 
-        button:hover {
-            background-color: #0056b3;
+        .login-button {
+            background-color: #76d7c4;
+            color: white;
+        }
+
+        .login-button:hover {
+            background-color: #4ab7a5;
+        }
+
+        .register-button {
+            background-color: #f8f9fa;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+
+        .register-button:hover {
+            background-color: #dee2e6;
         }
     </style>
 </head>
 
 <body>
     <div class="login-container">
-        <h2>Login</h2>
+        <h2>Einloggen</h2>
         <form id="loginForm">
             <input type="text" id="username" placeholder="Benutzername" required>
             <input type="password" id="password" placeholder="Passwort" required>
-            <button type="submit">Einloggen</button>
+            <button type="submit" class="button login-button">Einloggen</button>
         </form>
+        <button class="register-button" onclick="window.location.href='/api/auth/register/'">Sich
+            registrieren</button>
         <p id="message" style="color: red; font-size: 14px;"></p>
     </div>
 
@@ -76,7 +91,7 @@
 
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
-            const apiBaseUrl = window.location.origin; // Dynamische Basis-URL
+            const apiBaseUrl = window.location.origin;
 
             const response = await fetch(`${apiBaseUrl}/api/auth/token/`, {
                 method: "POST",

@@ -20,6 +20,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 import word_collection.views
 import word_collection.urls
+import my_jwt_auth.views
 import my_jwt_auth.urls
 
 urlpatterns = [
@@ -27,5 +28,7 @@ urlpatterns = [
     path('api/', include(word_collection.urls)),
     path('api/auth/', include(my_jwt_auth.urls)),
     path('api/auth/', include(my_jwt_auth.urls)),
+    path('login/', my_jwt_auth.views.login, name='login_page'),
+    path('register/', my_jwt_auth.views.register, name='register_page'),
     path('my_words/', word_collection.views.my_words, name='my_words')
 ]
