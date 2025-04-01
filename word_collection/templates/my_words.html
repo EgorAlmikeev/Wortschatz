@@ -25,7 +25,7 @@
     <script>
         const apiBaseUrl = window.location.origin;
         const apiUrl = `${apiBaseUrl}/api/words/`;
-        const loginPage = `${apiBaseUrl}/api/auth/login/`;
+        const loginPage = `${apiBaseUrl}/login/`;
         const itemsPerPage = 10;
         let currentPage = 1;
         let words = [];
@@ -89,6 +89,11 @@
                 li.appendChild(a);
                 pagination.appendChild(li);
             }
+        }
+
+        function logout() {
+            localStorage.removeItem("access");
+            window.location.href = loginPage;
         }
 
         fetchWords();
