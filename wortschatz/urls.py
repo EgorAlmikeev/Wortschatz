@@ -18,10 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+import word_collection.views
 import word_collection.urls
+import my_jwt_auth.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(word_collection.urls)),
-    path("api/auth/", include("my_jwt_auth.urls")),
+    path('api/auth/', include(my_jwt_auth.urls)),
+    path('api/auth/', include(my_jwt_auth.urls)),
+    path('my_words/', word_collection.views.my_words, name='my_words')
 ]

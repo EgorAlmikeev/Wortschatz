@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from django.http import HttpRequest
 
 from .models import Word, Category
 from .serializers import WordSerializer, CategorySerializer
@@ -25,3 +26,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         return serializer.save(owner = self.request.user)
+
+def my_words(request: HttpRequest):
+    return render(request, 'my_words.html')
