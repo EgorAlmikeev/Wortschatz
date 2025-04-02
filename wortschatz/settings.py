@@ -70,7 +70,7 @@ ROOT_URLCONF = 'wortschatz.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'wortschatz/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
