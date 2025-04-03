@@ -1,15 +1,21 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 from django.http import HttpRequest
 
 from .models import Word, Category
 from .serializers import WordSerializer, CategorySerializer
-from .utils import get_superuser_id
+
+class WordPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page'
+    max_page_size = 100
 
 class WordViewSet(viewsets.ModelViewSet):
     serializer_class = WordSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = WordPagination
 
     def get_queryset(self):
         return Word.objects.filter(owner = self.request.user)
