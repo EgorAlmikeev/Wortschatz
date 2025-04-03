@@ -1,0 +1,15 @@
+<script id="word-template" type="text/x-custom-template">
+    {% verbatim %}
+    <div class="word-card">
+        <p><strong>Definition:</strong> {{definition}}</p>
+        <p><strong>Übersetzung:</strong> {{translation}}</p>
+        <p><strong>Beispiel:</strong> {{example}}</p>
+        <p><strong>Wortart:</strong> {{part_of_speech}}</p>
+        <p><strong>Genus:</strong> {{genus}}</p>
+        <p><strong>Kategorien:</strong> {{categories}}</p>
+        <p><strong>Benutzungszähler:</strong> {{usage_count}}</p>
+        <a href="#" class="btn btn-primary" onclick="editWord({{id}})">Bearbeiten</a>
+        <a href="#" class="btn btn-danger" onclick="deleteWord({{id}})">Löschen</a>
+    </div>
+    {% endverbatim %}
+</script>
