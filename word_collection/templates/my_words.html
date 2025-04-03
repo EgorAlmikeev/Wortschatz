@@ -63,7 +63,7 @@
     }
 
     function deleteWord(wordId) {
-        const jwtToken = localStorage.getItem("jwt_token");
+        const jwtToken = localStorage.getItem("access");
         fetch(`/api/words/${wordId}/`, {
             method: "DELETE",
             headers: {
