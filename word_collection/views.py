@@ -9,7 +9,7 @@ from .serializers import WordSerializer, CategorySerializer
 
 class WordPagination(PageNumberPagination):
     page_size = 10
-    page_size_query_param = 'page'
+    page_size_query_param = 'page_size'
     max_page_size = 100
 
 class WordViewSet(viewsets.ModelViewSet):
@@ -18,7 +18,7 @@ class WordViewSet(viewsets.ModelViewSet):
     pagination_class = WordPagination
 
     def get_queryset(self):
-        return Word.objects.filter(owner = self.request.user)
+        return Word.objects.filter(owner = self.request.user).order_by("-created_date_time")
     
     def perform_create(self, serializer):
         return serializer.save(owner = self.request.user)
