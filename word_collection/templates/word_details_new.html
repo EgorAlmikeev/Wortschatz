@@ -84,6 +84,15 @@
             margin-top: 0.5rem;
             text-align: center;
         }
+
+        .other-forms-table {
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .other-forms-table td {
+            padding: 0.2rem 0.5rem;
+        }
     </style>
 </head>
 
@@ -106,8 +115,8 @@
         <!-- Kategorien -->
         <div class="mb-2">
             <div class="d-flex flex-wrap translation-badges">
-                <span class="badge bg-info text-dark"># Tiere</span>
-                <span class="badge bg-success"># Haustiere</span>
+                <span class="badge bg-info text-dark">#Tiere</span>
+                <span class="badge bg-success">#Haustiere</span>
             </div>
         </div>
 
@@ -147,16 +156,37 @@
                     <span class="badge bg-light text-dark">mutt</span>
                 </div>
             </div>
-            <button type="button" class="btn btn-link btn-sm p-0 mt-1 more-button" id="more-translations">...</button>
+            <div class="more-button">
+                <button type="button" class="btn btn-link btn-sm p-0" id="more-translations">Weitere
+                    Übersetzungen</button>
+            </div>
         </div>
 
-        <!-- Andere Formen -->
+        <!-- Andere Formen als Spoiler mit Tabelle -->
         <div class="mb-2">
-            <label for="other-forms" class="form-label">Andere Formen:</label>
-            <select id="other-forms" name="other_forms" class="form-select form-select-sm">
-                <option value="Hunde">Plural: Hunde</option>
-                <option value="Hundes">Genitiv: Hundes</option>
-            </select>
+            <details>
+                <summary class="form-label">Andere Formen anzeigen</summary>
+                <table class="table table-sm table-bordered other-forms-table mt-2">
+                    <tbody>
+                        <tr>
+                            <td>Plural</td>
+                            <td>Hunde</td>
+                        </tr>
+                        <tr>
+                            <td>Genitiv</td>
+                            <td>Hundes</td>
+                        </tr>
+                        <tr>
+                            <td>Dativ</td>
+                            <td>Hund</td>
+                        </tr>
+                        <tr>
+                            <td>Akkusativ</td>
+                            <td>Hund</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </details>
         </div>
 
     </div>
@@ -167,7 +197,7 @@
         document.getElementById('more-translations').addEventListener('click', function () {
             const extraTranslations = document.getElementById('extra-translations');
             extraTranslations.classList.toggle('d-none');
-            this.textContent = extraTranslations.classList.contains('d-none') ? '...' : 'Weniger anzeigen';
+            this.textContent = extraTranslations.classList.contains('d-none') ? 'Weitere Übersetzungen' : 'Weniger Übersetzungen';
         });
     </script>
 </body>
