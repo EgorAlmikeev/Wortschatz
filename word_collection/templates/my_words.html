@@ -3,8 +3,18 @@
 {% block title %}My Wortschatz{% endblock %}
 
 {% block content %}
+
+<style>
+    .word-list-container {
+        max-width: 600px;
+        margin: 2rem auto;
+    }
+</style>
+
+{% include 'word_details_style.html' %}
+
 <h1>Meine Wörter</h1>
-<div id="word-list" class="row"></div>
+<div id="word-list" class="row word-list-container"></div>
 <nav>
     <ul class="pagination justify-content-center">
         <li class="page-item"><a class="page-link" href="#" id="prev-page">« Zurück</a></li>
