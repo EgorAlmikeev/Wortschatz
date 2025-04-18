@@ -39,7 +39,7 @@ class Word(models.Model):
     usage_variants = models.JSONField(default=dict)
     genus_id = models.IntegerField(choices=Genus.choices, null=True)
     categories = models.ManyToManyField(Category, related_name='words')
-    part_of_speech = models.IntegerField(choices=PartOfSpeech, null=True)
+    part_of_speech_id = models.IntegerField(choices=PartOfSpeech, null=True)
     usage_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
