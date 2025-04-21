@@ -30,17 +30,28 @@ class PartOfSpeech(models.IntegerChoices):
     INTERJECTION = 10, 'Interjection'
 
 class Word(models.Model):
+    # Besitzer
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='words', db_index=True)
+    # Erscheinungsdatum
     created_date_time = models.DateTimeField(default=now)
+    # Definition
     definition = models.TextField(max_length=100)
+    # Übersetzungsvarianten
     translations = models.JSONField(default=list)
+    # Nutzungsvarianten
+    # [["Variante", "Übersetzung"], ...]
     examples = models.JSONField(default=list)
-    other_forms = models.JSONField(default=dict)
-    usage_variants = models.JSONField(default=dict)
+    # Andere Formen
+    # [["Formname", "Formdefinition"], ...]
+    other_forms = models.JSONField(default=list)
+    # Präpositionen und Fälle (für Verben)
+    # [["Präposition", "Fall", "Übersetzung"], ...]
+    prepositions_and_cases_with_translations = models.JSONField(default=list)
+    # Geschlecht (für Nomen)
     genus_id = models.IntegerField(choices=Genus.choices, null=True)
+    # Kategorien
     categories = models.ManyToManyField(Category, related_name='words')
+    # Wortart
     part_of_speech_id = models.IntegerField(choices=PartOfSpeech, null=True)
+    # Nutzungsanzahl
     usage_count = models.PositiveIntegerField(default=0)
-
-    def __str__(self):
-        return self.definition
