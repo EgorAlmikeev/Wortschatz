@@ -1,120 +1,142 @@
-<script id="word-template" type="text/x-custom-template">
-{% verbatim %}
-<div class="card p-3 card-wrapper">
+<template id="word-template">
+    <div class="card p-3 card-wrapper">
 
-    <!-- Dreipunkte-Menü oben rechts -->
-    <div class="top-actions dropdown">
-        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
-            aria-expanded="false">
-            <i class="bi bi-three-dots-vertical"></i>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Bearbeiten</a></li>
-            <li><a class="dropdown-item text-danger" href="#">Löschen</a></li>
-        </ul>
-    </div>
-
-    <!-- Kategorien -->
-    <div class="mb-2">
-        <div class="d-flex flex-wrap translation-badges">
-            <span class="badge bg-info text-dark">#Tiere</span>
-            <span class="badge bg-success">#Haustiere</span>
+        <!-- Dreipunkte-Menü oben rechts -->
+        <div class="top-actions dropdown">
+            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#">Bearbeiten</a></li>
+                <li><a class="dropdown-item text-danger" href="#">Löschen</a></li>
+            </ul>
         </div>
-    </div>
 
-    <!-- Grundform + Geschlecht -->
-    <div class="mb-3 word-center">
-        <div class="word-line">
-            <span class="word-highlight">der</span>
-            <span class="word-highlight">Hund</span>
+        <!-- Kategorien -->
+        <div class="mb-2">
+            <div id="categories-placeholder" class="d-flex flex-wrap translation-badges"></div>
         </div>
-    </div>
 
-    <!-- Übersetzungsbeispiele als plain text -->
-    <div class="mb-2 translation-container">
-        <div class="d-flex flex-wrap justify-content-center translation-badges">
-            <span class="badge bg-light text-dark">dog</span>
-            <span class="badge bg-light text-dark">hound</span>
-            <span class="badge bg-light text-dark">pooch</span>
+        <!-- Grundform + Geschlecht -->
+        <div class="mb-3 word-center">
+            <div class="word-line">
+                <span id="genus-placeholder" class="word-highlight d-none">Genus</span>
+                <span id="definition-placeholder" class="word-highlight">Definition</span>
+            </div>
         </div>
-        <div id="extra-translations" class="d-none">
+
+        <!-- Übersetzungsbeispiele als plain text -->
+        <div class="mb-2 translation-container">
             <div class="d-flex flex-wrap justify-content-center translation-badges">
-                <span class="badge bg-light text-dark">canine</span>
-                <span class="badge bg-light text-dark">pup</span>
-                <span class="badge bg-light text-dark">doggie</span>
-                <span class="badge bg-light text-dark">puppy</span>
-                <span class="badge bg-light text-dark">mutts</span>
-                <span class="badge bg-light text-dark">poochie</span>
-                <span class="badge bg-light text-dark">hounddog</span>
-                <span class="badge bg-light text-dark">fido</span>
-                <span class="badge bg-light text-dark">woof</span>
-                <span class="badge bg-light text-dark">pupper</span>
-                <span class="badge bg-light text-dark">canid</span>
-                <span class="badge bg-light text-dark">mongrel</span>
-                <span class="badge bg-light text-dark">snout</span>
-                <span class="badge bg-light text-dark">terrier</span>
-                <span class="badge bg-light text-dark">retriever</span>
-                <span class="badge bg-light text-dark">barker</span>
-                <span class="badge bg-light text-dark">mutt</span>
+                <span class="badge bg-light text-dark">dog</span>
+                <span class="badge bg-light text-dark">hound</span>
+                <span class="badge bg-light text-dark">pooch</span>
             </div>
-        </div>
-        <div class="more-button">
-            <button type="button" class="btn btn-link btn-sm p-0" id="more-translations">Weitere
-                Übersetzungen</button>
-        </div>
-    </div>
-
-    <!-- Andere Formen als Spoiler mit Tabelle -->
-    <div class="mb-2">
-        <details>
-            <summary class="form-label">Andere Formen</summary>
-            <table class="table table-sm table-bordered other-forms-table mt-2">
-                <tbody>
-                    <tr>
-                        <td>Plural</td>
-                        <td>Hunde</td>
-                    </tr>
-                    <tr>
-                        <td>Genitiv</td>
-                        <td>Hundes</td>
-                    </tr>
-                    <tr>
-                        <td>Dativ</td>
-                        <td>Hund</td>
-                    </tr>
-                    <tr>
-                        <td>Akkusativ</td>
-                        <td>Hund</td>
-                    </tr>
-                </tbody>
-            </table>
-        </details>
-    </div>
-
-    <!-- Nutzungsvarianten als Spoiler -->
-    <div class="mb-2">
-        <details>
-            <summary class="form-label">Nutzungsvarianten</summary>
-            <div class="mt-2">
-                <div class="usage-example">
-                    Der Hund bellt laut.<br>
-                    <div class="usage-translation">The dog barks loudly.</div>
-                </div>
-                <div class="usage-example">
-                    Mein Hund liebt es zu rennen.<br>
-                    <div class="usage-translation">My dog loves to run.</div>
-                </div>
-                <div class="usage-example">
-                    Ein Hund ist ein treuer Begleiter.<br>
-                    <div class="usage-translation">A dog is a loyal companion.</div>
+            <div id="extra-translations" class="d-none">
+                <div class="d-flex flex-wrap justify-content-center translation-badges">
+                    <span class="badge bg-light text-dark">canine</span>
+                    <span class="badge bg-light text-dark">pup</span>
+                    <span class="badge bg-light text-dark">doggie</span>
+                    <span class="badge bg-light text-dark">puppy</span>
+                    <span class="badge bg-light text-dark">mutts</span>
+                    <span class="badge bg-light text-dark">poochie</span>
+                    <span class="badge bg-light text-dark">hounddog</span>
+                    <span class="badge bg-light text-dark">fido</span>
+                    <span class="badge bg-light text-dark">woof</span>
+                    <span class="badge bg-light text-dark">pupper</span>
+                    <span class="badge bg-light text-dark">canid</span>
+                    <span class="badge bg-light text-dark">mongrel</span>
+                    <span class="badge bg-light text-dark">snout</span>
+                    <span class="badge bg-light text-dark">terrier</span>
+                    <span class="badge bg-light text-dark">retriever</span>
+                    <span class="badge bg-light text-dark">barker</span>
+                    <span class="badge bg-light text-dark">mutt</span>
                 </div>
             </div>
-        </details>
+            <div class="more-button">
+                <button type="button" class="btn btn-link btn-sm p-0" id="more-translations">Weitere
+                    Übersetzungen</button>
+            </div>
+        </div>
+
+        <!-- Andere Formen als Spoiler mit Tabelle -->
+        <div class="mb-2">
+            <details>
+                <summary class="form-label">Andere Formen</summary>
+                <table class="table table-sm table-bordered other-forms-table mt-2">
+                    <tbody>
+                        <tr>
+                            <td>Plural</td>
+                            <td>Hunde</td>
+                        </tr>
+                        <tr>
+                            <td>Genitiv</td>
+                            <td>Hundes</td>
+                        </tr>
+                        <tr>
+                            <td>Dativ</td>
+                            <td>Hund</td>
+                        </tr>
+                        <tr>
+                            <td>Akkusativ</td>
+                            <td>Hund</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </details>
+        </div>
+
+        <div class="mb-2">
+            <details>
+                <summary class="form-label">Präpositionen und Fälle</summary>
+                <table class="table table-sm table-bordered prepositions-table mt-2">
+                    <tbody>
+                        <tr>
+                            <td>Plural</td>
+                            <td>Hunde</td>
+                        </tr>
+                        <tr>
+                            <td>Genitiv</td>
+                            <td>Hundes</td>
+                        </tr>
+                        <tr>
+                            <td>Dativ</td>
+                            <td>Hund</td>
+                        </tr>
+                        <tr>
+                            <td>Akkusativ</td>
+                            <td>Hund</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </details>
+        </div>
+
+        <!-- Nutzungsvarianten als Spoiler -->
+        <div class="mb-2">
+            <details>
+                <summary class="form-label">Nutzungsvarianten</summary>
+                <div class="mt-2">
+                    <div class="usage-example">
+                        Der Hund bellt laut.<br>
+                        <div class="usage-translation">The dog barks loudly.</div>
+                    </div>
+                    <div class="usage-example">
+                        Mein Hund liebt es zu rennen.<br>
+                        <div class="usage-translation">My dog loves to run.</div>
+                    </div>
+                    <div class="usage-example">
+                        Ein Hund ist ein treuer Begleiter.<br>
+                        <div class="usage-translation">A dog is a loyal companion.</div>
+                    </div>
+                </div>
+            </details>
+        </div>
+
     </div>
 
-</div>
-
-<!-- <script>
+    <!-- <script>
     // Zeigt zusätzliche Übersetzungen bei Klick auf "..."
     document.getElementById('more-translations').addEventListener('click', function () {
         const extraTranslations = document.getElementById('extra-translations');
@@ -122,5 +144,4 @@
         this.textContent = extraTranslations.classList.contains('d-none') ? 'Weitere Übersetzungen' : 'Weniger Übersetzungen';
     });
 </script> -->
-{% endverbatim %}
-</script>
+</template>

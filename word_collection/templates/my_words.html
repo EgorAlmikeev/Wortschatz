@@ -30,6 +30,49 @@
     let currentPage = 1;
 
     function loadWords(page = 1) {
+
+        function replaceDefinition(card, definition) {
+            card.querySelector("#definition-placeholder").innerText = definition;
+        }
+
+        function replaceGenus(card, genus_id) {
+            function getGenusNameById(id) {
+                switch (id) {
+                    case 1: return "der";
+                    case 2: return "die";
+                    case 3: return "das";
+                    case 4: return "die";
+                    default: return null;
+                }
+            }
+
+            genus_span = card.querySelector("#genus-placeholder")
+            genus_name = getGenusNameById(genus_id)
+            if (genus_name !== null) {
+                genus_span.innerText = genus_span.innerText = genus_name;
+                genus_span.classList.toggle('d-none');
+            }
+        }
+
+        function replaceCategories(card, categories) {
+            const categories_placeholder = card.querySelector("#categories-placeholder");
+            categories.forEach(category => {
+                category_span = document.createElement("span");
+                category_span.classList.add("badge");
+                category_span.classList.add("bg-success");
+                category_span.innerText = `#${category.name}`;
+                categories_placeholder.appendChild(category_span);
+            })
+        }
+
+        function createCardHTML(template, word) {
+            const card = template.content.cloneNode(true);
+            replaceDefinition(card, word.definition);
+            replaceGenus(card, word.genus_id);
+            replaceCategories(card, word.categories_details);
+            return card;
+        }
+
         const jwtToken = localStorage.getItem("access");
         fetch(`/api/words/?page=${page}`, {
             method: "GET",
@@ -43,20 +86,9 @@
                 wordList.innerHTML = "";
 
                 data.results.forEach(word => {
-                    let template = document.getElementById("word-template").innerHTML;
-                    // template = template
-                    //     .replace("{{definition}}", word.definition)
-                    //     .replace("{{translation}}", word.translation)
-                    //     .replace("{{example}}", word.example)
-                    //     .replace("{{part_of_speech}}", word.part_of_speech || "Unbekannt")
-                    //     .replace("{{genus}}", word.genus || "Unbekannt")
-                    //     .replace("{{categories}}", word.categories.join(", "))
-                    //     .replace("{{usage_count}}", word.usage_count)
-                    //     .replace("{{id}}", word.id);
-
-                    const div = document.createElement("div");
-                    div.innerHTML = template;
-                    wordList.appendChild(div);
+                    const template = document.getElementById("word-template");
+                    const card = createCardHTML(template, word);
+                    wordList.appendChild(card);
                 });
 
                 currentPage = page;
