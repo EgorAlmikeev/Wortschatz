@@ -118,11 +118,33 @@
                 }
             }
 
+            function addOtherForms(card, other_forms) {
+                if (other_forms.length > 0) {
+                    const other_forms_table_body = card.querySelector("#other-forms-table-body");
+                    other_forms.forEach(other_form => {
+                        const other_form_tr = document.createElement("tr");
+                        const other_form_name_td = document.createElement("td");
+                        const other_form_definition_td = document.createElement("td");
+
+                        other_form_name_td.innerText = other_form[0];
+                        other_form_definition_td.innerText = other_form[1];
+                        other_form_tr.appendChild(other_form_name_td);
+                        other_form_tr.appendChild(other_form_definition_td);
+                        other_forms_table_body.appendChild(other_form_tr);
+                    })
+                }
+                else {
+                    const other_forms_placeholder = card.querySelector("#other-forms-placeholder");
+                    other_forms_placeholder.classList.toggle("d-none");
+                }
+            }
+
             const card = template.content.cloneNode(true);
             addDefinition(card, word.definition);
             addGenus(card, word.genus_id);
             addCategories(card, word.categories_details);
             addTranslations(card, word.translations, word.id);
+            addOtherForms(card, word.other_forms);
             return card;
         }
 
