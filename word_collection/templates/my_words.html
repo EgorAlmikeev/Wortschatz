@@ -120,36 +120,77 @@
 
             function addOtherForms(card, other_forms) {
                 function createOtherFormRow(other_form) {
-                    const other_form_tr = document.createElement("tr");
-                    const other_form_name_td = document.createElement("td");
-                    const other_form_definition_td = document.createElement("td");
+                    const tr = document.createElement("tr");
+                    const name_td = document.createElement("td");
+                    const definition_td = document.createElement("td");
 
-                    other_form_name_td.innerText = other_form[0];
-                    other_form_definition_td.innerText = other_form[1];
-                    other_form_tr.appendChild(other_form_name_td);
-                    other_form_tr.appendChild(other_form_definition_td);
+                    name_td.innerText = other_form[0];
+                    definition_td.innerText = other_form[1];
+                    tr.appendChild(name_td);
+                    tr.appendChild(definition_td);
 
-                    return other_form_tr;
+                    return tr;
                 }
 
                 if (other_forms.length > 0) {
-                    const other_forms_table_body = card.querySelector("#other-forms-table-body");
-                    const other_forms_th_name = document.createElement("th");
-                    const other_forms_th_definition = document.createElement("th");
+                    const table_body = card.querySelector("#other-forms-table-body");
+                    const th_name = document.createElement("th");
+                    const th_definition = document.createElement("th");
 
-                    other_forms_th_name.innerText = "Name";
-                    other_forms_th_definition.innerText = "Definition";
+                    th_name.innerText = "Name";
+                    th_definition.innerText = "Definition";
 
-                    other_forms_table_body.appendChild(other_forms_th_name);
-                    other_forms_table_body.appendChild(other_forms_th_definition);
+                    table_body.appendChild(th_name);
+                    table_body.appendChild(th_definition);
 
                     other_forms.forEach(other_form => {
-                        other_forms_table_body.appendChild(createOtherFormRow(other_form));
+                        table_body.appendChild(createOtherFormRow(other_form));
                     })
                 }
                 else {
-                    const other_forms_placeholder = card.querySelector("#other-forms-placeholder");
-                    other_forms_placeholder.classList.toggle("d-none");
+                    const placeholder = card.querySelector("#other-forms-placeholder");
+                    placeholder.classList.toggle("d-none");
+                }
+            }
+
+            function addPrepositionsAndCasesWithTranslations(card, prepositions_and_cases_with_translations) {
+                function createPrepositionAndCaseWithTranslationRow(preposition_and_case_with_translation) {
+                    const tr = document.createElement("tr");
+                    const preposition_td = document.createElement("td");
+                    const case_td = document.createElement("td");
+                    const translation_td = document.createElement("td");
+
+                    preposition_td.innerText = preposition_and_case_with_translation[0];
+                    case_td.innerText = preposition_and_case_with_translation[1];
+                    translation_td.innerText = preposition_and_case_with_translation[2];
+                    tr.appendChild(preposition_td);
+                    tr.appendChild(case_td);
+                    tr.appendChild(translation_td);
+
+                    return tr;
+                }
+
+                if (prepositions_and_cases_with_translations.length > 0) {
+                    const table_body = card.querySelector("#prepositions-and-cases-table-body");
+                    const th_preposition = document.createElement("th");
+                    const th_case = document.createElement("th");
+                    const th_translation = document.createElement("th");
+
+                    th_preposition.innerText = "Präposition";
+                    th_case.innerText = "Fall";
+                    th_translation.innerText = "Übersetzung";
+
+                    table_body.appendChild(th_preposition);
+                    table_body.appendChild(th_case);
+                    table_body.appendChild(th_translation);
+
+                    prepositions_and_cases_with_translations.forEach(preposition_and_case_with_translation => {
+                        table_body.appendChild(createPrepositionAndCaseWithTranslationRow(preposition_and_case_with_translation));
+                    })
+                }
+                else {
+                    const placeholder = card.querySelector("#prepositions-and-cases-placeholder");
+                    placeholder.classList.toggle("d-none");
                 }
             }
 
@@ -159,6 +200,7 @@
             addCategories(card, word.categories_details);
             addTranslations(card, word.translations, word.id);
             addOtherForms(card, word.other_forms);
+            addPrepositionsAndCasesWithTranslations(card, word.prepositions_and_cases_with_translations);
             return card;
         }
 
