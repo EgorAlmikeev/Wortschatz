@@ -119,18 +119,32 @@
             }
 
             function addOtherForms(card, other_forms) {
+                function createOtherFormRow(other_form) {
+                    const other_form_tr = document.createElement("tr");
+                    const other_form_name_td = document.createElement("td");
+                    const other_form_definition_td = document.createElement("td");
+
+                    other_form_name_td.innerText = other_form[0];
+                    other_form_definition_td.innerText = other_form[1];
+                    other_form_tr.appendChild(other_form_name_td);
+                    other_form_tr.appendChild(other_form_definition_td);
+
+                    return other_form_tr;
+                }
+
                 if (other_forms.length > 0) {
                     const other_forms_table_body = card.querySelector("#other-forms-table-body");
-                    other_forms.forEach(other_form => {
-                        const other_form_tr = document.createElement("tr");
-                        const other_form_name_td = document.createElement("td");
-                        const other_form_definition_td = document.createElement("td");
+                    const other_forms_th_name = document.createElement("th");
+                    const other_forms_th_definition = document.createElement("th");
 
-                        other_form_name_td.innerText = other_form[0];
-                        other_form_definition_td.innerText = other_form[1];
-                        other_form_tr.appendChild(other_form_name_td);
-                        other_form_tr.appendChild(other_form_definition_td);
-                        other_forms_table_body.appendChild(other_form_tr);
+                    other_forms_th_name.innerText = "Name";
+                    other_forms_th_definition.innerText = "Definition";
+
+                    other_forms_table_body.appendChild(other_forms_th_name);
+                    other_forms_table_body.appendChild(other_forms_th_definition);
+
+                    other_forms.forEach(other_form => {
+                        other_forms_table_body.appendChild(createOtherFormRow(other_form));
                     })
                 }
                 else {
