@@ -64,7 +64,7 @@
                     category_span.classList.add("bg-success");
                     category_span.innerText = `#${category.name}`;
                     categories_placeholder.appendChild(category_span);
-                })
+                });
             }
 
             function addTranslations(card, translations, word_id) {
@@ -145,7 +145,7 @@
 
                     other_forms.forEach(other_form => {
                         table_body.appendChild(createOtherFormRow(other_form));
-                    })
+                    });
                 }
                 else {
                     const placeholder = card.querySelector("#other-forms-placeholder");
@@ -186,10 +186,38 @@
 
                     prepositions_and_cases_with_translations.forEach(preposition_and_case_with_translation => {
                         table_body.appendChild(createPrepositionAndCaseWithTranslationRow(preposition_and_case_with_translation));
-                    })
+                    });
                 }
                 else {
                     const placeholder = card.querySelector("#prepositions-and-cases-placeholder");
+                    placeholder.classList.toggle("d-none");
+                }
+            }
+
+            function addExamples(card, examples) {
+                function createExampleDiv(example) {
+                    const example_div = document.createElement("div");
+                    const translation_div = document.createElement("div");
+                    example_div.classList.add("usage-example");
+                    example_div.innerText = example[0];
+
+                    translation_div.classList.add("usage-translation");
+                    translation_div.innerText = example[1];
+
+                    example_div.appendChild(document.createElement("br"));
+                    example_div.appendChild(translation_div);
+
+                    return example_div;
+                }
+
+                if (examples.length > 0) {
+                    const examples_div = card.querySelector("#examples-div");
+                    examples.forEach(example => {
+                        examples_div.appendChild(createExampleDiv(example));
+                    });
+                }
+                else {
+                    const placeholder = card.querySelector("#examples-placeholder");
                     placeholder.classList.toggle("d-none");
                 }
             }
@@ -201,6 +229,7 @@
             addTranslations(card, word.translations, word.id);
             addOtherForms(card, word.other_forms);
             addPrepositionsAndCasesWithTranslations(card, word.prepositions_and_cases_with_translations);
+            addExamples(card, word.examples);
             return card;
         }
 
