@@ -1,4 +1,4 @@
-source ./env/bin/activate  
+source ./env/bin/activate
 django-admin startproject %project_name% .
 python3 manage.py startapp %app_name%
 python3 manage.py makemigrations
