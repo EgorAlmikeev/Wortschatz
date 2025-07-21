@@ -30,7 +30,18 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const authButton = document.getElementById("authButton");
-        const accessToken = localStorage.getItem("access");
+        let accessToken = localStorage.getItem("access");
+
+        if (accessToken) {
+            fetch('/api/auth/token/verify/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: accessToken })
+            }).then(res => {
+                if (!res.ok)
+                    accessToken = null
+            });
+        }
 
         if (accessToken) {
             authButton.innerHTML = `<button class="btn btn-danger" onclick="logout()">Abmelden</button>`;
