@@ -18,7 +18,7 @@ class WordViewSet(viewsets.ModelViewSet):
     pagination_class = WordPagination
 
     def get_queryset(self):
-        return Word.objects.filter(owner = self.request.user).order_by("-created_date_time")
+        return Word.objects.select_related('owner').prefetch_related('categories').filter(owner = self.request.user).order_by("-created_date_time")
     
     def perform_create(self, serializer):
         return serializer.save(owner = self.request.user)
@@ -28,7 +28,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Category.objects.filter(owner = self.request.user)
+        return Category.objects.select_related('owner').filter(owner = self.request.user)
     
     def perform_create(self, serializer):
         return serializer.save(owner = self.request.user)
