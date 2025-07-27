@@ -27,8 +27,8 @@ from .views import home
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(word_collection.urls)),
-    path('api/auth/', include(my_jwt_auth.urls)),
-    path('api/auth/', include(my_jwt_auth.urls)),
+    path('auth/', include(my_jwt_auth.urls)),
+    path('auth/', include(my_jwt_auth.urls)),
     path('login/', my_jwt_auth.views.login, name='login_page'),
     path('register/', my_jwt_auth.views.register, name='register_page'),
     path('my_words/', word_collection.views.my_words, name='my_words'),

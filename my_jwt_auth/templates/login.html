@@ -94,7 +94,7 @@
             const password = document.getElementById("password").value;
             const apiBaseUrl = window.location.origin;
 
-            const response = await fetch(`${apiBaseUrl}/api/auth/token/`, {
+            const response = await fetch(`${apiBaseUrl}/auth/token/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password })
