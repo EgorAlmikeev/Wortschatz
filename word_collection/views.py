@@ -3,9 +3,12 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from django.http import HttpRequest
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Word, Category
 from .serializers import WordSerializer, CategorySerializer
+from .permissions import IsOwnerOrReadOnly
+from .filters import WordFilter
 
 class WordPagination(PageNumberPagination):
     page_size = 10
@@ -14,8 +17,10 @@ class WordPagination(PageNumberPagination):
 
 class WordViewSet(viewsets.ModelViewSet):
     serializer_class = WordSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     pagination_class = WordPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = WordFilter
 
     def get_queryset(self):
         return Word.objects \
@@ -23,13 +28,13 @@ class WordViewSet(viewsets.ModelViewSet):
             .prefetch_related('categories') \
             .filter(owner = self.request.user) \
             .order_by("-created_date_time")
-    
+
     def perform_create(self, serializer):
-        return serializer.save(owner = self.request.user)
+        serializer.save(owner = self.request.user)
 
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_queryset(self):
         return Category.objects \
