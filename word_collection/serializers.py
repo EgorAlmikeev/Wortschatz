@@ -11,7 +11,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class WordSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
-    categories = serializers.PrimaryKeyRelatedField(many=True, queryset=Category.objects.all())
+    categories = serializers.PrimaryKeyRelatedField(many=True, queryset=Category.objects.all(), default=[])
     categories_details = CategorySerializer(many=True, read_only=True, source="categories")
     genus_name = serializers.CharField(source='get_genus_id_display', read_only=True)
     part_of_speech_name = serializers.CharField(source='get_part_of_speech_id_display', read_only=True)
