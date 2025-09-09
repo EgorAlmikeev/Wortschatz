@@ -31,9 +31,6 @@ class TestWordCollection:
     def test_create_category(self):
         data = Mockups.category_mockup
         response = self.client.post('/api/categories/', data, format='json')
-
-        if response.status_code != 201:
-            print(response.data)
         
         assert response.status_code == 201
         assert response.data['name'] == data['name']
@@ -42,6 +39,7 @@ class TestWordCollection:
     def test_create_word_with_category(self):
         category_data = Mockups.category_mockup
         response = self.client.post('/api/categories/', category_data, format='json')
+        
         assert response.status_code == 201
         assert response.data['name'] == category_data['name']
 
@@ -51,3 +49,17 @@ class TestWordCollection:
 
         assert response.status_code == 201
         assert response.data['categories'] == [1]
+
+    @pytest.mark.django_db
+    def test_update_word(self):
+        data = Mockups.word_mockup
+        response = self.client.post('/api/words/', data, format='json')
+        
+        assert response.status_code == 201
+        assert response.data['definition'] == data['definition']
+
+        data['definition'] = 'updated test definition'
+        response = self.client.put('/api/words/1/', data, format='json')
+
+        assert response.status_code == 200
+        assert response.data['definition'] == data['definition']
