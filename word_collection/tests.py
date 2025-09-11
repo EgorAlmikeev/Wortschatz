@@ -63,3 +63,45 @@ class TestWordCollection:
 
         assert response.status_code == 200
         assert response.data['definition'] == data['definition']
+    
+    @pytest.mark.django_db
+    def test_update_category(self):
+        data = Mockups.category_mockup
+        response = self.client.post('/api/categories/', data, format='json')
+        
+        assert response.status_code == 201
+        assert response.data['name'] == data['name']
+
+        data['name'] = 'updated category name'
+        response = self.client.put('/api/categories/1/', data, format='json')
+
+        assert response.status_code == 200
+        assert response.data['name'] == data['name']
+    
+    @pytest.mark.django_db
+    def test_delete_word(self):
+        data = Mockups.word_mockup
+        response = self.client.post('/api/words/', data, format='json')
+        
+        assert response.status_code == 201
+        assert response.data['definition'] == data['definition']
+
+        response = self.client.delete('/api/words/1/')
+        assert response.status_code == 204
+
+        response = self.client.get('/api/words/1/')
+        assert response.status_code == 404
+    
+    @pytest.mark.django_db
+    def test_delete_category(self):
+        data = Mockups.category_mockup
+        response = self.client.post('/api/categories/', data, format='json')
+
+        assert response.status_code == 201
+        assert response.data['name'] == data['name']
+
+        response = self.client.delete('/api/categories/1/')
+        assert response.status_code == 204
+
+        response = self.client.get('/api/categories/1/')
+        assert response.status_code == 404
