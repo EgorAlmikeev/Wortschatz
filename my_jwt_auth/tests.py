@@ -14,6 +14,30 @@ class TestJWTAuth:
     @pytest.mark.django_db
     def test_authenticate_user(self):
         data = JWTMockups.user
+        
         response = self.client.post('/auth/token/', data, format='json')
+
+        assert response.status_code == 200
+        assert 'access' in response.data
+        assert 'refresh' in response.data
+    
+    @pytest.mark.django_db
+    def test_refresh_token(self):
+        data = JWTMockups.user
+        response = self.client.post('/auth/token/', data, format='json')
+        refresh_token = response.data['refresh']
+
+        response = self.client.post('/auth/token/refresh/', {'refresh': refresh_token}, format='json')
+
+        assert response.status_code == 200
+        assert 'access' in response.data
+    
+    @pytest.mark.django_db
+    def test_verify_token(self):
+        data = JWTMockups.user
+        response = self.client.post('/auth/token/', data, format='json')
+        access_token = response.data['access']
+
+        response = self.client.post('/auth/token/verify/', {'token': access_token}, format='json')
 
         assert response.status_code == 200
