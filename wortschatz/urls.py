@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 import word_collection.views
 import word_collection.urls
@@ -25,11 +26,24 @@ import my_jwt_auth.urls
 from .views import home
 
 urlpatterns = [
+    # Home page
+    path('', home, name = 'home'),
+    # Admin page
     path('admin/', admin.site.urls),
-    path('api/', include(word_collection.urls)),
+    # OpenAPI schema
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Swagger UI
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    # Redoc UI
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    # JWT API
     path('auth/', include(my_jwt_auth.urls)),
+    # JWT login page
     path('login/', my_jwt_auth.views.login, name='login_page'),
+    # JWT registration page
     path('register/', my_jwt_auth.views.register, name='register_page'),
+    # Word collection page
     path('my_words/', word_collection.views.my_words, name='my_words'),
-    path('', home, name = 'home')
+    # Word collection API
+    path('api/', include(word_collection.urls)),
 ]
