@@ -7,7 +7,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['owner', 'id', 'name']
+        fields = ['owner', 'id', 'name', 'color']
 
 class WordSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')

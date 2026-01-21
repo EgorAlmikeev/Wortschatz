@@ -5,7 +5,10 @@ from django.contrib.auth.models import User
 from .mixins import OwnedModelMixin
 
 class Category(OwnedModelMixin, models.Model):
+    # Name of the category
     name = models.TextField(max_length=100)
+    # Associated color in HEX format
+    color = models.TextField(max_length=10, default="#EACB00")
 
     def __str__(self):
         return self.name
@@ -29,26 +32,26 @@ class PartOfSpeech(models.IntegerChoices):
     INTERJECTION = 10, 'Interjection'
 
 class Word(OwnedModelMixin, models.Model):
-    # Erscheinungsdatum
+    # Date and time of creation
     created_date_time = models.DateTimeField(default=now)
     # Definition
     definition = models.TextField(max_length=100)
-    # Übersetzungsvarianten
+    # List of translations
     translations = models.JSONField(default=list)
-    # Nutzungsvarianten
-    # [["Variante", "Übersetzung"], ...]
+    # Use cases
+    # [["Sentence", "Translation"], ...]
     examples = models.JSONField(default=list)
-    # Andere Formen
-    # [["Formname", "Formdefinition"], ...]
+    # Other forms of the word
+    # [["Name of the form", "The form itself"], ...]
     other_forms = models.JSONField(default=list)
-    # Präpositionen und Fälle (für Verben)
-    # [["Präposition", "Fall", "Übersetzung"], ...]
+    # Prepositions with their cases and translations
+    # [["Preposition", "Case", "Translation"], ...]
     prepositions_and_cases_with_translations = models.JSONField(default=list)
-    # Geschlecht (für Nomen)
+    # Genus for nouns
     genus_id = models.IntegerField(choices=Genus.choices, null=True)
-    # Kategorien
+    # List of associated categories
     categories = models.ManyToManyField(Category, related_name='words')
-    # Wortart
+    # Part of speech
     part_of_speech_id = models.IntegerField(choices=PartOfSpeech, null=True)
-    # Nutzungsanzahl
+    # How many times the word has been used
     usage_count = models.PositiveIntegerField(default=0)
