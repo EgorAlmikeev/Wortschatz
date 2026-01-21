@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 
 from word_collection.serializers import CategorySerializer, WordSerializer
-from word_collection.tests.factories import CategoryFactory, WordFactory
+from tests.word_collection.factories import CategoryFactory, WordFactory
 
 class Mockups:
     @staticmethod

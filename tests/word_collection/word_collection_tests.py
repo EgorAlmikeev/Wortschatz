@@ -2,7 +2,7 @@ import pytest
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 
-from word_collection.tests.mockups import Mockups as WordCollectionMocups
+from tests.word_collection.mockups import Mockups as WordCollectionMocups
 from my_jwt_auth.mockups import Mockups as JWTMockups
 
 class TestWordCollection:
