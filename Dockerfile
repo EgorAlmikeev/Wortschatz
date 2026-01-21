@@ -1,5 +1,5 @@
 # stage 1: development with tests
-FROM python:3.12-slim as dev
+FROM python:3.12-slim AS dev
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -14,7 +14,7 @@ ENTRYPOINT ["./entrypoint.sh"]
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]
 
 # stage 2: production (no tests)
-FROM python:3.12-slim as prod
+FROM python:3.12-slim AS prod
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -25,7 +25,7 @@ COPY manage.py /app/manage.py
 COPY requirements.txt /app/requirements.txt
 COPY entrypoint.sh /app/entrypoint.sh
 COPY wortschatz /app/wortschatz
-COPY my_jwt_app /app/my_jwt_app
+COPY my_jwt_auth /app/my_jwt_auth
 COPY word_collection /app/word_collection
 
 RUN pip install --upgrade pip && pip install -r ./requirements.txt
