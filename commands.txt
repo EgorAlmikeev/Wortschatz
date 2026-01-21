@@ -1,8 +1,0 @@
-source ./env/bin/activate
-django-admin startproject %project_name% .
-python3 manage.py startapp %app_name%
-python3 manage.py makemigrations
-python3 manage.py migrate
-python3 manage.py createsuperuser
-python3 manage.py runserver
-python3 manage.py shell
