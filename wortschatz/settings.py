@@ -17,7 +17,7 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = os.getenv("DJANGO_DEBUG") == "1"
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 # Application definition
 
@@ -100,8 +100,8 @@ DATABASES = {
         "NAME": os.getenv("POSTGRES_DB", "mydb"),
         "USER": os.getenv("POSTGRES_USER", "myuser"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD", "mypassword"),
-        "HOST": os.getenv("POSTGRES_HOST", "127.0.0.1"),
-        "PORT": os.getenv("POSTGRES_PORT", "5432"),
+        "HOST": "db",  # Use the service name defined in docker-compose.yml
+        "PORT": "5432",
     }
 }
 
