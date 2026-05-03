@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:16
@@ -11,9 +9,6 @@ services:
   backend:
     build:
       context: .
-      target: dev
-    volumes:
-      - .:/app
     env_file:
       - .env
     depends_on:
