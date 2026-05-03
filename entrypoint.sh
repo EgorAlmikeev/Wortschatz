@@ -1,4 +1,7 @@
 #!/bin/sh
+echo "Generating migrations..."
+python manage.py makemigrations
+
 echo "Applying database migrations..."
 until python manage.py migrate --noinput; do
   >&2 echo "PostgreSQL is unavailable - sleeping"
