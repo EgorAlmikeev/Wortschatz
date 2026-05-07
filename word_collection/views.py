@@ -30,8 +30,7 @@ class WordViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         qs = Word.objects.filter(owner=self.request.user).order_by("-created_date_time")
         if self.action == "retrieve":
-            qs = qs.select_related(
-                "owner",
+            qs = qs.select_related("owner").prefetch_related(
                 "translations",
                 "examples",
                 "forms",
@@ -42,9 +41,9 @@ class WordViewSet(viewsets.ModelViewSet):
         return qs
 
     def get_serializer_class(self):
-        if self.action == "retrieve":
-            return WordDetailSerializer
-        return WordListSerializer
+        if self.action == "list":
+            return WordListSerializer
+        return WordDetailSerializer
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)

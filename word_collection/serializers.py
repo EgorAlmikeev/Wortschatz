@@ -52,10 +52,8 @@ class WordPrepositionAndCaseWithTranslationSerializer(serializers.ModelSerialize
 
 class WordListSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source="owner.id")
-    genus_name = serializers.CharField(source="get_genus_id_display", read_only=True)
-    part_of_speech_name = serializers.CharField(
-        source="get_part_of_speech_id_display", read_only=True
-    )
+    genus_name = serializers.CharField(source="get_genus_id_display")
+    part_of_speech_name = serializers.CharField(source="get_part_of_speech_id_display")
 
     class Meta:
         model = Word
@@ -74,15 +72,13 @@ class WordListSerializer(serializers.ModelSerializer):
 
 class WordDetailSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source="owner.id")
-    genus_name = serializers.CharField(source="get_genus_id_display", read_only=True)
-    part_of_speech_name = serializers.CharField(
-        source="get_part_of_speech_id_display", read_only=True
-    )
-    translations = WordTranslationSerializer(many=True, read_only=True)
-    examples = WordExampleSerializer(many=True, read_only=True)
-    forms = WordFormSerializer(many=True, read_only=True)
+    genus_name = serializers.CharField(source="get_genus_id_display")
+    part_of_speech_name = serializers.CharField(source="get_part_of_speech_id_display")
+    translations = WordTranslationSerializer(many=True)
+    examples = WordExampleSerializer(many=True)
+    forms = WordFormSerializer(many=True)
     prepositions_and_cases_with_translations = (
-        WordPrepositionAndCaseWithTranslationSerializer(many=True, read_only=True)
+        WordPrepositionAndCaseWithTranslationSerializer(many=True)
     )
 
     class Meta:
@@ -102,3 +98,60 @@ class WordDetailSerializer(serializers.ModelSerializer):
             "genus_name",
             "image_url",
         ]
+
+    def create(self, validated_data):
+        translations_data = validated_data.pop("translations", [])
+        examples_data = validated_data.pop("examples", [])
+        forms_data = validated_data.pop("forms", [])
+        prepositions_data = validated_data.pop(
+            "prepositions_and_cases_with_translations", []
+        )
+
+        word = super().create(validated_data)
+
+        for translation_data in translations_data:
+            WordTranslation.objects.create(word=word, **translation_data)
+        for example_data in examples_data:
+            WordExample.objects.create(word=word, **example_data)
+        for form_data in forms_data:
+            WordForm.objects.create(word=word, **form_data)
+        for preposition_data in prepositions_data:
+            WordPrepositionAndCaseWithTranslation.objects.create(
+                word=word, **preposition_data
+            )
+
+        return word
+
+    def update(self, instance, validated_data):
+        translations_data = validated_data.pop("translations", serializers.empty)
+        examples_data = validated_data.pop("examples", serializers.empty)
+        forms_data = validated_data.pop("forms", serializers.empty)
+        prepositions_data = validated_data.pop(
+            "prepositions_and_cases_with_translations", serializers.empty
+        )
+
+        instance = super().update(instance, validated_data)
+
+        if translations_data is not serializers.empty:
+            instance.translations.all().delete()
+            for translation_data in translations_data:
+                WordTranslation.objects.create(word=instance, **translation_data)
+
+        if examples_data is not serializers.empty:
+            instance.examples.all().delete()
+            for example_data in examples_data:
+                WordExample.objects.create(word=instance, **example_data)
+
+        if forms_data is not serializers.empty:
+            instance.forms.all().delete()
+            for form_data in forms_data:
+                WordForm.objects.create(word=instance, **form_data)
+
+        if prepositions_data is not serializers.empty:
+            instance.prepositions_and_cases_with_translations.all().delete()
+            for preposition_data in prepositions_data:
+                WordPrepositionAndCaseWithTranslation.objects.create(
+                    word=instance, **preposition_data
+                )
+
+        return instance
