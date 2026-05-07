@@ -1,13 +1,13 @@
 from django.contrib.auth.models import User
 
-from word_collection.serializers import CategorySerializer, WordSerializer
+from word_collection.serializers import CategorySerializer, WordDetailSerializer
 from tests.word_collection.factories import CategoryFactory, WordFactory
 
 class Mockups:
     @staticmethod
     def build_word(owner: User):
         model = WordFactory.build(owner=owner)
-        json = WordSerializer(model).data
+        json = WordDetailSerializer(model).data
         return model, json
     
     @staticmethod
@@ -19,7 +19,7 @@ class Mockups:
     @staticmethod
     def create_word(owner: User):
         model = WordFactory.create(owner=owner)
-        json = WordSerializer(model).data
+        json = WordDetailSerializer(model).data
         return model, json
     
     @staticmethod

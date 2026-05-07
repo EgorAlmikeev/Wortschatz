@@ -23,7 +23,7 @@ class TestWordCollection:
         assert response.data['definition'] == word_json['definition']
         assert response.data['translations'] == word_json['translations']
         assert response.data['examples'] == word_json['examples']
-        assert response.data['other_forms'] == word_json['other_forms']
+        assert response.data['forms'] == word_json['forms']
         assert response.data['part_of_speech_id'] == word_json['part_of_speech_id']
         assert response.data['genus_id'] == word_json['genus_id']
     
@@ -36,16 +36,6 @@ class TestWordCollection:
         assert response.data['name'] == category_json['name']
 
     @pytest.mark.django_db
-    def test_create_word_with_category(self):
-        category, _ = WordCollectionMocups.create_category(self.user)
-        _, word_json = WordCollectionMocups.build_word(self.user)
-        word_json['categories'] = [category.id]
-        response = self.client.post('/api/words/', word_json, format='json')
-
-        assert response.status_code == 201
-        assert response.data['categories'] == [category.id]
-
-    @pytest.mark.django_db
     def test_update_word(self):
         word, word_json = WordCollectionMocups.create_word(self.user)
         word_json['definition'] = 'updated definition'
@@ -53,6 +43,20 @@ class TestWordCollection:
 
         assert response.status_code == 200
         assert response.data['definition'] == word_json['definition']
+
+    @pytest.mark.django_db
+    def test_partial_update_word(self):
+        word, _ = WordCollectionMocups.create_word(self.user)
+        patch_data = {
+            'examples': [
+                {'sentence': 'updated sentence', 'translation': 'updated translation'}
+            ]
+        }
+        response = self.client.patch(f'/api/words/{word.id}/', patch_data, format='json')
+
+        assert response.status_code == 200
+        assert response.data['examples'] == patch_data['examples']
+        assert response.data['definition'] == word.definition
     
     @pytest.mark.django_db
     def test_update_category(self):

@@ -1,7 +1,14 @@
 import factory
 from faker import Faker
 
-from word_collection.models import Category, Word
+from word_collection.models import (
+    Category,
+    Word,
+    WordForm,
+    WordExample,
+    WordTranslation,
+    WordPrepositionAndCaseWithTranslation,
+)
 
 class CategoryFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -14,56 +21,86 @@ class WordFactory(factory.django.DjangoModelFactory):
         model = Word
         skip_postgeneration_save = True
 
-    id = factory.Sequence(lambda n: n + 1)
     definition = factory.Faker('word')
     genus_id = factory.Faker('random_int', min=1, max=4)
     part_of_speech_id = factory.Faker('random_int', min=1, max=10)
-    usage_count = factory.Faker('random_int', min=0, max=100)
+    image_url = factory.Faker('image_url')
 
     @factory.post_generation
     def translations(self, create, extracted, **kwargs):
-        from faker import Faker
         fake = Faker()
-        if extracted:
-            self.translations = extracted
-        else:
-            self.translations = [fake.word() for _ in range(2)]
-        
+        translations = (
+            extracted
+            if extracted is not None
+            else [{'translation': fake.word()} for _ in range(2)]
+        )
+
         if create:
-            self.save()
+            for translation_data in translations:
+                WordTranslation.objects.create(word=self, **translation_data)
+        else:
+            self.translations = translations
 
     @factory.post_generation
     def examples(self, create, extracted, **kwargs):
-        from faker import Faker
         fake = Faker()
-        if extracted:
-            self.examples = extracted
-        else:
-            self.examples = [[fake.word(), fake.word()] for _ in range(2)]
-        
+        examples = (
+            extracted
+            if extracted is not None
+            else [
+                {
+                    'sentence': fake.sentence(nb_words=6),
+                    'translation': fake.word(),
+                }
+                for _ in range(2)
+            ]
+        )
+
         if create:
-            self.save()
+            for example_data in examples:
+                WordExample.objects.create(word=self, **example_data)
+        else:
+            self.examples = examples
     
     @factory.post_generation
-    def other_forms(self, create, extracted, **kwargs):
-        from faker import Faker
+    def forms(self, create, extracted, **kwargs):
         fake = Faker()
-        if extracted:
-            self.other_forms = extracted
-        else:
-            self.other_forms = [[fake.word(), fake.word()] for _ in range(2)]
-        
+        forms = (
+            extracted
+            if extracted is not None
+            else [
+                {
+                    'name': fake.word(),
+                    'form': fake.word(),
+                }
+                for _ in range(2)
+            ]
+        )
+
         if create:
-            self.save()
+            for form_data in forms:
+                WordForm.objects.create(word=self, **form_data)
+        else:
+            self.forms = forms
     
     @factory.post_generation
     def prepositions_and_cases_with_translations(self, create, extracted, **kwargs):
-        from faker import Faker
         fake = Faker()
-        if extracted:
-            self.prepositions_and_cases_with_translations = extracted
-        else:
-            self.prepositions_and_cases_with_translations = [[fake.word(), fake.word(), fake.word()] for _ in range(2)]
-        
+        items = (
+            extracted
+            if extracted is not None
+            else [
+                {
+                    'preposition': fake.word(),
+                    'case': fake.word(),
+                    'translation': fake.word(),
+                }
+                for _ in range(2)
+            ]
+        )
+
         if create:
-            self.save()
+            for item_data in items:
+                WordPrepositionAndCaseWithTranslation.objects.create(word=self, **item_data)
+        else:
+            self.prepositions_and_cases_with_translations = items
