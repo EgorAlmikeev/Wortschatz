@@ -10,21 +10,21 @@ from word_collection.models import (
     WordPrepositionAndCaseWithTranslation,
 )
 
-class CategoryFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = Category
+"""
+Payload factories for testing purposes.
+These factories generate mock JSON DATA for API testing. 
+"""
 
-    name = factory.Faker('word')
 
-class WordFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = Word
-        skip_postgeneration_save = True
+class CategoryPayloadFactory(factory.DictFactory):
+    name = factory.Faker("word")
 
-    definition = factory.Faker('word')
-    genus_id = factory.Faker('random_int', min=1, max=4)
-    part_of_speech_id = factory.Faker('random_int', min=1, max=10)
-    image_url = factory.Faker('image_url')
+
+class WordPayloadFactory(factory.DictFactory):
+    definition = factory.Faker("word")
+    genus_id = factory.Faker("random_int", min=1, max=4)
+    part_of_speech_id = factory.Faker("random_int", min=1, max=10)
+    image_url = None
 
     @factory.post_generation
     def translations(self, create, extracted, **kwargs):
@@ -32,14 +32,9 @@ class WordFactory(factory.django.DjangoModelFactory):
         translations = (
             extracted
             if extracted is not None
-            else [{'translation': fake.word()} for _ in range(2)]
+            else [{"translation": fake.word()} for _ in range(2)]
         )
-
-        if create:
-            for translation_data in translations:
-                WordTranslation.objects.create(word=self, **translation_data)
-        else:
-            self.translations = translations
+        self["translations"] = translations
 
     @factory.post_generation
     def examples(self, create, extracted, **kwargs):
@@ -49,19 +44,14 @@ class WordFactory(factory.django.DjangoModelFactory):
             if extracted is not None
             else [
                 {
-                    'sentence': fake.sentence(nb_words=6),
-                    'translation': fake.word(),
+                    "sentence": fake.sentence(nb_words=6),
+                    "translation": fake.word(),
                 }
                 for _ in range(2)
             ]
         )
+        self["examples"] = examples
 
-        if create:
-            for example_data in examples:
-                WordExample.objects.create(word=self, **example_data)
-        else:
-            self.examples = examples
-    
     @factory.post_generation
     def forms(self, create, extracted, **kwargs):
         fake = Faker()
@@ -70,19 +60,14 @@ class WordFactory(factory.django.DjangoModelFactory):
             if extracted is not None
             else [
                 {
-                    'name': fake.word(),
-                    'form': fake.word(),
+                    "name": fake.word(),
+                    "form": fake.word(),
                 }
                 for _ in range(2)
             ]
         )
+        self["forms"] = forms
 
-        if create:
-            for form_data in forms:
-                WordForm.objects.create(word=self, **form_data)
-        else:
-            self.forms = forms
-    
     @factory.post_generation
     def prepositions_and_cases_with_translations(self, create, extracted, **kwargs):
         fake = Faker()
@@ -91,9 +76,101 @@ class WordFactory(factory.django.DjangoModelFactory):
             if extracted is not None
             else [
                 {
-                    'preposition': fake.word(),
-                    'case': fake.word(),
-                    'translation': fake.word(),
+                    "preposition": fake.word(),
+                    "case": fake.word(),
+                    "translation": fake.word(),
+                }
+                for _ in range(2)
+            ]
+        )
+        self["prepositions_and_cases_with_translations"] = items
+
+
+"""
+Model factories for testing purposes.
+These factories generate mock model INSTANCES for testing.
+"""
+
+
+class CategoryFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Category
+
+    name = factory.Faker("word")
+
+
+class WordFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Word
+        skip_postgeneration_save = True
+
+    definition = factory.Faker("word")
+    genus_id = factory.Faker("random_int", min=1, max=4)
+    part_of_speech_id = factory.Faker("random_int", min=1, max=10)
+    image_url = None
+
+    @factory.post_generation
+    def translations(self, create, extracted, **kwargs):
+        fake = Faker()
+        translations = (
+            extracted
+            if extracted is not None
+            else [{"translation": fake.word()} for _ in range(2)]
+        )
+
+        if create:
+            for translation_data in translations:
+                WordTranslation.objects.create(word=self, **translation_data)
+
+    @factory.post_generation
+    def examples(self, create, extracted, **kwargs):
+        fake = Faker()
+        examples = (
+            extracted
+            if extracted is not None
+            else [
+                {
+                    "sentence": fake.sentence(nb_words=6),
+                    "translation": fake.word(),
+                }
+                for _ in range(2)
+            ]
+        )
+
+        if create:
+            for example_data in examples:
+                WordExample.objects.create(word=self, **example_data)
+
+    @factory.post_generation
+    def forms(self, create, extracted, **kwargs):
+        fake = Faker()
+        forms = (
+            extracted
+            if extracted is not None
+            else [
+                {
+                    "name": fake.word(),
+                    "form": fake.word(),
+                }
+                for _ in range(2)
+            ]
+        )
+
+        if create:
+            for form_data in forms:
+                WordForm.objects.create(word=self, **form_data)
+
+    @factory.post_generation
+    def prepositions_and_cases_with_translations(self, create, extracted, **kwargs):
+        fake = Faker()
+        items = (
+            extracted
+            if extracted is not None
+            else [
+                {
+                    "preposition": fake.word(),
+                    "case": fake.word(),
+                    "translation": fake.word(),
                 }
                 for _ in range(2)
             ]
@@ -101,6 +178,6 @@ class WordFactory(factory.django.DjangoModelFactory):
 
         if create:
             for item_data in items:
-                WordPrepositionAndCaseWithTranslation.objects.create(word=self, **item_data)
-        else:
-            self.prepositions_and_cases_with_translations = items
+                WordPrepositionAndCaseWithTranslation.objects.create(
+                    word=self, **item_data
+                )

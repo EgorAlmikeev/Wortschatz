@@ -72,8 +72,10 @@ class WordListSerializer(serializers.ModelSerializer):
 
 class WordDetailSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source="owner.id")
-    genus_name = serializers.CharField(source="get_genus_id_display")
-    part_of_speech_name = serializers.CharField(source="get_part_of_speech_id_display")
+    genus_name = serializers.CharField(source="get_genus_id_display", read_only=True)
+    part_of_speech_name = serializers.CharField(
+        source="get_part_of_speech_id_display", read_only=True
+    )
     translations = WordTranslationSerializer(many=True)
     examples = WordExampleSerializer(many=True)
     forms = WordFormSerializer(many=True)

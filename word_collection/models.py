@@ -85,6 +85,6 @@ class Word(OwnedModelMixin, models.Model):
     # Genus for nouns
     genus_id = models.IntegerField(choices=Genus.choices, null=True)
     # Part of speech
-    part_of_speech_id = models.IntegerField(choices=PartOfSpeech, null=True)
+    part_of_speech_id = models.IntegerField(choices=PartOfSpeech.choices, null=True)
     # URL of the image associated with the word
     image_url = models.TextField(max_length=200, null=True)
