@@ -102,6 +102,14 @@ class TagFactory(factory.django.DjangoModelFactory):
 
     name = factory.Faker("word")
 
+class CollectionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "word_collection.Collection"
+
+    name = factory.Faker("word")
+    description = factory.Faker("sentence", nb_words=10)
+    image_url = factory.Faker("url")
+
 class WordFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Word
