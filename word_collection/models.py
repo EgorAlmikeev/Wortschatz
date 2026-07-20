@@ -4,12 +4,24 @@ from django.contrib.auth.models import User
 
 from .mixins import OwnedModelMixin
 
-
-class Category(OwnedModelMixin, models.Model):
-    # Name of the category
+class Collection(OwnedModelMixin, models.Model):
+    # Name of the collection
     name = models.TextField(max_length=100)
-    # Associated color in HEX format
-    color = models.TextField(max_length=10, default="#EACB00")
+    # Description of the collection
+    description = models.TextField(max_length=200, null=True)
+    # Words in the collection
+    words = models.ManyToManyField("Word", related_name="collections")
+    # Tags in the collection
+    tags = models.ManyToManyField("Tag", related_name="collections")
+    # Image URL for the collection
+    image_url = models.TextField(max_length=200, null=True)
+
+    def __str__(self):
+        return self.name
+
+class Tag(OwnedModelMixin, models.Model):
+    # Name of the tag
+    name = models.TextField(max_length=100)
 
     def __str__(self):
         return self.name

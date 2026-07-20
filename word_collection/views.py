@@ -5,9 +5,9 @@ from rest_framework.pagination import PageNumberPagination
 from django.http import HttpRequest
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Word, Category
+from .models import Tag, Word
 from .serializers import (
-    CategorySerializer,
+    TagSerializer,
     WordDetailSerializer,
     WordListSerializer,
 )
@@ -49,12 +49,12 @@ class WordViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
-    serializer_class = CategorySerializer
+class TagViewSet(viewsets.ModelViewSet):
+    serializer_class = TagSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_queryset(self):
-        return Category.objects.select_related("owner").filter(owner=self.request.user)
+        return Tag.objects.select_related("owner").filter(owner=self.request.user)
 
     def perform_create(self, serializer):
         return serializer.save(owner=self.request.user)

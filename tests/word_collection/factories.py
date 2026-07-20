@@ -2,7 +2,7 @@ import factory
 from faker import Faker
 
 from word_collection.models import (
-    Category,
+    Tag,
     Word,
     WordForm,
     WordExample,
@@ -16,7 +16,7 @@ These factories generate mock JSON DATA for API testing.
 """
 
 
-class CategoryPayloadFactory(factory.DictFactory):
+class TagPayloadFactory(factory.DictFactory):
     name = factory.Faker("word")
 
 
@@ -92,9 +92,9 @@ These factories generate mock model INSTANCES for testing.
 """
 
 
-class CategoryFactory(factory.django.DjangoModelFactory):
+class TagFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = Category
+        model = Tag
 
     name = factory.Faker("word")
 

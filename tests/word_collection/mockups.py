@@ -1,11 +1,11 @@
 from django.contrib.auth.models import User
 
-from word_collection.serializers import CategorySerializer, WordDetailSerializer
+from word_collection.serializers import TagSerializer, WordDetailSerializer
 from tests.word_collection.factories import (
-    CategoryFactory,
+    TagFactory,
+    TagPayloadFactory,
     WordFactory,
     WordPayloadFactory,
-    CategoryPayloadFactory,
 )
 
 
@@ -15,8 +15,8 @@ class Mockups:
         return WordPayloadFactory()
 
     @staticmethod
-    def generate_category_payload(owner: User):
-        return CategoryPayloadFactory()
+    def generate_tag_payload(owner: User):
+        return TagPayloadFactory()
 
     @staticmethod
     def create_word(owner: User):
@@ -25,7 +25,7 @@ class Mockups:
         return model, json
 
     @staticmethod
-    def create_category(owner: User):
-        model = CategoryFactory.create(owner=owner)
-        json = CategorySerializer(model).data
+    def create_tag(owner: User):
+        model = TagFactory.create(owner=owner)
+        json = TagSerializer(model).data
         return model, json

@@ -1,5 +1,4 @@
 import pytest
-from rest_framework import response
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 
@@ -46,12 +45,12 @@ class TestWordCollection:
         assert response.data["genus_id"] == word_json["genus_id"]
 
     @pytest.mark.django_db
-    def test_create_category(self):
-        category_json = WordCollectionMocups.generate_category_payload(self.user)
-        response = self.client.post("/api/categories/", category_json, format="json")
+    def test_create_tag(self):
+        tag_json = WordCollectionMocups.generate_tag_payload(self.user)
+        response = self.client.post("/api/tags/", tag_json, format="json")
 
         assert response.status_code == 201
-        assert response.data["name"] == category_json["name"]
+        assert response.data["name"] == tag_json["name"]
 
     @pytest.mark.django_db
     def test_update_word(self):
@@ -87,15 +86,15 @@ class TestWordCollection:
         assert response.data["definition"] == word.definition
 
     @pytest.mark.django_db
-    def test_update_category(self):
-        category, category_json = WordCollectionMocups.create_category(self.user)
-        category_json["name"] = "updated name"
+    def test_update_tag(self):
+        tag, tag_json = WordCollectionMocups.create_tag(self.user)
+        tag_json["name"] = "updated name"
         response = self.client.put(
-            f"/api/categories/{category.id}/", category_json, format="json"
+            f"/api/tags/{tag.id}/", tag_json, format="json"
         )
 
         assert response.status_code == 200
-        assert response.data["name"] == category_json["name"]
+        assert response.data["name"] == tag_json["name"]
 
     @pytest.mark.django_db
     def test_delete_word(self):
@@ -107,10 +106,10 @@ class TestWordCollection:
         assert response.status_code == 404
 
     @pytest.mark.django_db
-    def test_delete_category(self):
-        category, _ = WordCollectionMocups.create_category(self.user)
-        response = self.client.delete(f"/api/categories/{category.id}/")
+    def test_delete_tag(self):
+        tag, _ = WordCollectionMocups.create_tag(self.user)
+        response = self.client.delete(f"/api/tags/{tag.id}/")
         assert response.status_code == 204
 
-        response = self.client.get(f"/api/categories/{category.id}/")
+        response = self.client.get(f"/api/tags/{tag.id}/")
         assert response.status_code == 404
