@@ -5,8 +5,9 @@ from rest_framework.pagination import PageNumberPagination
 from django.http import HttpRequest
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Tag, Word
+from .models import Collection, Tag, Word
 from .serializers import (
+    CollectionSerializer,
     TagSerializer,
     WordDetailSerializer,
     WordListSerializer,
@@ -59,6 +60,17 @@ class TagViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         return serializer.save(owner=self.request.user)
 
+class CollectionViewSet(viewsets.ModelViewSet):
+    serializer_class = CollectionSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        return Collection.objects.select_related("owner").prefetch_related(
+            "words", "tags"
+        ).filter(owner=self.request.user)
+
+    def perform_create(self, serializer):
+        return serializer.save(owner=self.request.user)
 
 def my_words(request: HttpRequest):
     return render(request, "my_words.html")
