@@ -38,3 +38,12 @@ class TestCollectionModel:
         assert response.status_code == 200
         assert response.data["name"] == collection_json["name"]
         assert response.data["description"] == collection_json["description"]
+
+    @pytest.mark.django_db
+    def test_delete_collection(self):
+        collection, _ = WordCollectionMocups.create_collection(self.user)
+        response = self.client.delete(f"/api/collections/{collection.id}/")
+        assert response.status_code == 204
+
+        response = self.client.get(f"/api/collections/{collection.id}/")
+        assert response.status_code == 404
