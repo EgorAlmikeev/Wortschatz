@@ -1,0 +1,45 @@
+import pytest
+from rest_framework.test import APIClient
+from django.contrib.auth.models import User
+
+from tests.word_collection.mockups import Mockups as WordCollectionMocups
+from my_jwt_auth.mockups import Mockups as JWTMockups
+
+class TestTagModel:
+
+    def setup_method(self, method):
+        print()
+        print(f"=== creating user for a '{method.__name__}' test ===")
+        self.user = User.objects.create_user(
+            username=JWTMockups.user["username"], password=JWTMockups.user["password"]
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    @pytest.mark.django_db
+    def test_create_tag(self):
+        tag_json = WordCollectionMocups.generate_tag_payload()
+        response = self.client.post("/api/tags/", tag_json, format="json")
+
+        assert response.status_code == 201
+        assert response.data["name"] == tag_json["name"]
+    
+    @pytest.mark.django_db
+    def test_update_tag(self):
+        tag, tag_json = WordCollectionMocups.create_tag(self.user)
+        tag_json["name"] = "updated name"
+        response = self.client.put(
+            f"/api/tags/{tag.id}/", tag_json, format="json"
+        )
+
+        assert response.status_code == 200
+        assert response.data["name"] == tag_json["name"]
+
+    @pytest.mark.django_db
+    def test_delete_tag(self):
+        tag, _ = WordCollectionMocups.create_tag(self.user)
+        response = self.client.delete(f"/api/tags/{tag.id}/")
+        assert response.status_code == 204
+
+        response = self.client.get(f"/api/tags/{tag.id}/")
+        assert response.status_code == 404

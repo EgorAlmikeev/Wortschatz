@@ -18,5 +18,3 @@ def create_superuser(db):
         print('=== ERROR: test-superuser is not created ===')
     
     yield test_superuser
-
-

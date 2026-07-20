@@ -5,8 +5,7 @@ from django.contrib.auth.models import User
 from tests.word_collection.mockups import Mockups as WordCollectionMocups
 from my_jwt_auth.mockups import Mockups as JWTMockups
 
-
-class TestWordCollection:
+class TestWordModel:
 
     def setup_method(self, method):
         print()
@@ -45,23 +44,6 @@ class TestWordCollection:
         assert response.data["genus_id"] == word_json["genus_id"]
 
     @pytest.mark.django_db
-    def test_create_tag(self):
-        tag_json = WordCollectionMocups.generate_tag_payload()
-        response = self.client.post("/api/tags/", tag_json, format="json")
-
-        assert response.status_code == 201
-        assert response.data["name"] == tag_json["name"]
-
-    @pytest.mark.django_db
-    def test_create_collection(self):
-        collection_json = WordCollectionMocups.generate_collection_payload()
-        response = self.client.post("/api/collections/", collection_json, format="json")
-
-        assert response.status_code == 201
-        assert response.data["name"] == collection_json["name"]
-        assert response.data["description"] == collection_json["description"]
-
-    @pytest.mark.django_db
     def test_update_word(self):
         word, word_json = WordCollectionMocups.create_word(self.user)
         word_json["definition"] = "updated definition"
@@ -95,30 +77,10 @@ class TestWordCollection:
         assert response.data["definition"] == word.definition
 
     @pytest.mark.django_db
-    def test_update_tag(self):
-        tag, tag_json = WordCollectionMocups.create_tag(self.user)
-        tag_json["name"] = "updated name"
-        response = self.client.put(
-            f"/api/tags/{tag.id}/", tag_json, format="json"
-        )
-
-        assert response.status_code == 200
-        assert response.data["name"] == tag_json["name"]
-
-    @pytest.mark.django_db
     def test_delete_word(self):
         word, _ = WordCollectionMocups.create_word(self.user)
         response = self.client.delete(f"/api/words/{word.id}/")
         assert response.status_code == 204
 
         response = self.client.get(f"/api/words/{word.id}/")
-        assert response.status_code == 404
-
-    @pytest.mark.django_db
-    def test_delete_tag(self):
-        tag, _ = WordCollectionMocups.create_tag(self.user)
-        response = self.client.delete(f"/api/tags/{tag.id}/")
-        assert response.status_code == 204
-
-        response = self.client.get(f"/api/tags/{tag.id}/")
         assert response.status_code == 404
