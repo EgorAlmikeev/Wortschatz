@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Word, Tag
+from .models import Collection, Word, Tag
 
 
 @admin.register(Word)
@@ -15,3 +15,9 @@ class WordAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     list_display = ["name", "owner"]
     search_fields = ["owner__username"]
+
+@admin.register(Collection)
+class CollectionAdmin(admin.ModelAdmin):
+    list_display = ["name", "owner"]
+    search_fields = ["owner__username"]
+    autocomplete_fields = ["owner", "tags"]
