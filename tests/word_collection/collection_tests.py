@@ -25,3 +25,16 @@ class TestCollectionModel:
         assert response.status_code == 201
         assert response.data["name"] == collection_json["name"]
         assert response.data["description"] == collection_json["description"]
+
+    @pytest.mark.django_db
+    def test_update_collection(self):
+        collection, collection_json = WordCollectionMocups.create_collection(self.user)
+        collection_json["name"] = "updated name"
+        collection_json["description"] = "updated description"
+        response = self.client.put(
+            f"/api/collections/{collection.id}/", collection_json, format="json"
+        )
+
+        assert response.status_code == 200
+        assert response.data["name"] == collection_json["name"]
+        assert response.data["description"] == collection_json["description"]
