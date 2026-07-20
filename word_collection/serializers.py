@@ -1,22 +1,30 @@
 from rest_framework import serializers
 
 from .models import (
+    Collection,
     Word,
-    Category,
+    Tag,
     WordForm,
     WordExample,
     WordTranslation,
     WordPrepositionAndCaseWithTranslation,
 )
 
-
-class CategorySerializer(serializers.ModelSerializer):
+class TagSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source="owner.id")
 
     class Meta:
-        model = Category
-        fields = ["owner", "id", "name", "color"]
+        model = Tag
+        fields = ["owner", "id", "name"]
 
+class CollectionSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source="owner.id")
+    tags = TagSerializer(many=True, read_only=True)
+    words = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = Collection
+        fields = ["owner", "id", "name", "description", "words", "tags", "image_url"]
 
 class WordFormSerializer(serializers.ModelSerializer):
     word_id = serializers.IntegerField(source="word.id", read_only=True)
@@ -82,6 +90,7 @@ class WordDetailSerializer(serializers.ModelSerializer):
     prepositions_and_cases_with_translations = (
         WordPrepositionAndCaseWithTranslationSerializer(many=True)
     )
+    collections = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Word
@@ -99,6 +108,7 @@ class WordDetailSerializer(serializers.ModelSerializer):
             "genus_id",
             "genus_name",
             "image_url",
+            "collections",
         ]
 
     def create(self, validated_data):

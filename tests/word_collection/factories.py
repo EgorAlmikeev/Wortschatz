@@ -2,7 +2,7 @@ import factory
 from faker import Faker
 
 from word_collection.models import (
-    Category,
+    Tag,
     Word,
     WordForm,
     WordExample,
@@ -16,15 +16,19 @@ These factories generate mock JSON DATA for API testing.
 """
 
 
-class CategoryPayloadFactory(factory.DictFactory):
+class TagPayloadFactory(factory.DictFactory):
     name = factory.Faker("word")
 
+class CollectionPayloadFactory(factory.DictFactory):
+    name = factory.Faker("word")
+    description = factory.Faker("sentence", nb_words=10)
+    image_url = factory.Faker("url")
 
 class WordPayloadFactory(factory.DictFactory):
     definition = factory.Faker("word")
     genus_id = factory.Faker("random_int", min=1, max=4)
     part_of_speech_id = factory.Faker("random_int", min=1, max=10)
-    image_url = None
+    image_url = factory.Faker("url")
 
     @factory.post_generation
     def translations(self, create, extracted, **kwargs):
@@ -92,12 +96,19 @@ These factories generate mock model INSTANCES for testing.
 """
 
 
-class CategoryFactory(factory.django.DjangoModelFactory):
+class TagFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = Category
+        model = Tag
 
     name = factory.Faker("word")
 
+class CollectionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "word_collection.Collection"
+
+    name = factory.Faker("word")
+    description = factory.Faker("sentence", nb_words=10)
+    image_url = factory.Faker("url")
 
 class WordFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -107,7 +118,7 @@ class WordFactory(factory.django.DjangoModelFactory):
     definition = factory.Faker("word")
     genus_id = factory.Faker("random_int", min=1, max=4)
     part_of_speech_id = factory.Faker("random_int", min=1, max=10)
-    image_url = None
+    image_url = factory.Faker("url")
 
     @factory.post_generation
     def translations(self, create, extracted, **kwargs):

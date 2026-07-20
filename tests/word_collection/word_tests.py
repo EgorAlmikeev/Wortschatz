@@ -1,13 +1,11 @@
 import pytest
-from rest_framework import response
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 
 from tests.word_collection.mockups import Mockups as WordCollectionMocups
 from my_jwt_auth.mockups import Mockups as JWTMockups
 
-
-class TestWordCollection:
+class TestWordModel:
 
     def setup_method(self, method):
         print()
@@ -20,7 +18,7 @@ class TestWordCollection:
 
     @pytest.mark.django_db
     def test_create_word(self):
-        word_json = WordCollectionMocups.generate_word_payload(self.user)
+        word_json = WordCollectionMocups.generate_word_payload()
         response = self.client.post("/api/words/", word_json, format="json")
 
         assert response.status_code == 201
@@ -44,14 +42,6 @@ class TestWordCollection:
 
         assert response.data["part_of_speech_id"] == word_json["part_of_speech_id"]
         assert response.data["genus_id"] == word_json["genus_id"]
-
-    @pytest.mark.django_db
-    def test_create_category(self):
-        category_json = WordCollectionMocups.generate_category_payload(self.user)
-        response = self.client.post("/api/categories/", category_json, format="json")
-
-        assert response.status_code == 201
-        assert response.data["name"] == category_json["name"]
 
     @pytest.mark.django_db
     def test_update_word(self):
@@ -87,30 +77,10 @@ class TestWordCollection:
         assert response.data["definition"] == word.definition
 
     @pytest.mark.django_db
-    def test_update_category(self):
-        category, category_json = WordCollectionMocups.create_category(self.user)
-        category_json["name"] = "updated name"
-        response = self.client.put(
-            f"/api/categories/{category.id}/", category_json, format="json"
-        )
-
-        assert response.status_code == 200
-        assert response.data["name"] == category_json["name"]
-
-    @pytest.mark.django_db
     def test_delete_word(self):
         word, _ = WordCollectionMocups.create_word(self.user)
         response = self.client.delete(f"/api/words/{word.id}/")
         assert response.status_code == 204
 
         response = self.client.get(f"/api/words/{word.id}/")
-        assert response.status_code == 404
-
-    @pytest.mark.django_db
-    def test_delete_category(self):
-        category, _ = WordCollectionMocups.create_category(self.user)
-        response = self.client.delete(f"/api/categories/{category.id}/")
-        assert response.status_code == 204
-
-        response = self.client.get(f"/api/categories/{category.id}/")
         assert response.status_code == 404
