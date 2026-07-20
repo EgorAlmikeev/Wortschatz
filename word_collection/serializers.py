@@ -90,6 +90,7 @@ class WordDetailSerializer(serializers.ModelSerializer):
     prepositions_and_cases_with_translations = (
         WordPrepositionAndCaseWithTranslationSerializer(many=True)
     )
+    collections = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Word
@@ -107,6 +108,7 @@ class WordDetailSerializer(serializers.ModelSerializer):
             "genus_id",
             "genus_name",
             "image_url",
+            "collections",
         ]
 
     def create(self, validated_data):

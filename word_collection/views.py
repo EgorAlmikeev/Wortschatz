@@ -1,7 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.decorators import action
 from django.http import HttpRequest
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -71,6 +74,32 @@ class CollectionViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         return serializer.save(owner=self.request.user)
+    
+    @action(detail=True, methods=["post"])
+    def add_word(self, request, pk=None):
+        collection = self.get_object()
+        word = get_object_or_404(
+            Word,
+            pk=request.data["word_id"],
+            owner=request.user,
+        )
+
+        collection.words.add(word)
+
+        return Response(status=status.HTTP_200_OK, data=CollectionSerializer(collection).data)
+    
+    @action(detail=True, methods=["delete"])
+    def remove_word(self, request, pk=None):
+        collection = self.get_object()
+        word = get_object_or_404(
+            Word,
+            pk=request.data["word_id"],
+            owner=request.user,
+        )
+
+        collection.words.remove(word)
+
+        return Response(status=status.HTTP_200_OK, data=CollectionSerializer(collection).data)
 
 def my_words(request: HttpRequest):
     return render(request, "my_words.html")
