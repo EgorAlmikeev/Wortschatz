@@ -47,3 +47,16 @@ class TestCollectionModel:
 
         response = self.client.get(f"/api/collections/{collection.id}/")
         assert response.status_code == 404
+
+    @pytest.mark.django_db
+    def test_collection_with_words(self):
+        collection, _ = WordCollectionMocups.create_collection(self.user)
+        word, _ = WordCollectionMocups.create_word(self.user)
+
+        response = self.client.post(f"/api/collections/{collection.id}/add_word/", {"word_id": word.id}, format="json")
+        assert response.status_code == 200
+        assert any(word_id == word.id for word_id in response.data["words"])
+
+        response = self.client.get(f"/api/collections/{collection.id}/")
+        assert response.status_code == 200
+        assert any(word_id == word.id for word_id in response.data["words"])
