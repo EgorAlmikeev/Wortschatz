@@ -19,7 +19,7 @@ class TestWordCollection:
 
     @pytest.mark.django_db
     def test_create_word(self):
-        word_json = WordCollectionMocups.generate_word_payload(self.user)
+        word_json = WordCollectionMocups.generate_word_payload()
         response = self.client.post("/api/words/", word_json, format="json")
 
         assert response.status_code == 201
@@ -46,11 +46,20 @@ class TestWordCollection:
 
     @pytest.mark.django_db
     def test_create_tag(self):
-        tag_json = WordCollectionMocups.generate_tag_payload(self.user)
+        tag_json = WordCollectionMocups.generate_tag_payload()
         response = self.client.post("/api/tags/", tag_json, format="json")
 
         assert response.status_code == 201
         assert response.data["name"] == tag_json["name"]
+
+    @pytest.mark.django_db
+    def test_create_collection(self):
+        collection_json = WordCollectionMocups.generate_collection_payload()
+        response = self.client.post("/api/collections/", collection_json, format="json")
+
+        assert response.status_code == 201
+        assert response.data["name"] == collection_json["name"]
+        assert response.data["description"] == collection_json["description"]
 
     @pytest.mark.django_db
     def test_update_word(self):

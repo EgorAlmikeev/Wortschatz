@@ -26,13 +26,11 @@ class Tag(OwnedModelMixin, models.Model):
     def __str__(self):
         return self.name
 
-
 class Genus(models.IntegerChoices):
     MALE = 1, "Male"
     FEMALE = 2, "Female"
     NEUTRAL = 3, "Neutral"
     PLURAL = 4, "Plural"
-
 
 class PartOfSpeech(models.IntegerChoices):
     NOUN = 1, "Noun"

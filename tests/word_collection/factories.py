@@ -19,12 +19,16 @@ These factories generate mock JSON DATA for API testing.
 class TagPayloadFactory(factory.DictFactory):
     name = factory.Faker("word")
 
+class CollectionPayloadFactory(factory.DictFactory):
+    name = factory.Faker("word")
+    description = factory.Faker("sentence", nb_words=10)
+    image_url = factory.Faker("url")
 
 class WordPayloadFactory(factory.DictFactory):
     definition = factory.Faker("word")
     genus_id = factory.Faker("random_int", min=1, max=4)
     part_of_speech_id = factory.Faker("random_int", min=1, max=10)
-    image_url = None
+    image_url = factory.Faker("url")
 
     @factory.post_generation
     def translations(self, create, extracted, **kwargs):
@@ -98,7 +102,6 @@ class TagFactory(factory.django.DjangoModelFactory):
 
     name = factory.Faker("word")
 
-
 class WordFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Word
@@ -107,7 +110,7 @@ class WordFactory(factory.django.DjangoModelFactory):
     definition = factory.Faker("word")
     genus_id = factory.Faker("random_int", min=1, max=4)
     part_of_speech_id = factory.Faker("random_int", min=1, max=10)
-    image_url = None
+    image_url = factory.Faker("url")
 
     @factory.post_generation
     def translations(self, create, extracted, **kwargs):

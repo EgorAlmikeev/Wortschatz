@@ -2,21 +2,25 @@ from django.contrib.auth.models import User
 
 from word_collection.serializers import TagSerializer, WordDetailSerializer
 from tests.word_collection.factories import (
+    CollectionPayloadFactory,
     TagFactory,
     TagPayloadFactory,
     WordFactory,
     WordPayloadFactory,
 )
 
-
 class Mockups:
     @staticmethod
-    def generate_word_payload(owner: User):
+    def generate_word_payload():
         return WordPayloadFactory()
 
     @staticmethod
-    def generate_tag_payload(owner: User):
+    def generate_tag_payload():
         return TagPayloadFactory()
+    
+    @staticmethod
+    def generate_collection_payload():
+        return CollectionPayloadFactory()
 
     @staticmethod
     def create_word(owner: User):
