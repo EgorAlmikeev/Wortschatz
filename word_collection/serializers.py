@@ -20,6 +20,7 @@ class TagSerializer(serializers.ModelSerializer):
 class CollectionSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source="owner.id")
     tags = TagSerializer(many=True, read_only=True)
+    words = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Collection
