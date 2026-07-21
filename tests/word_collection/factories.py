@@ -23,6 +23,7 @@ class CollectionPayloadFactory(factory.DictFactory):
     name = factory.Faker("word")
     description = factory.Faker("sentence", nb_words=10)
     image_url = factory.Faker("url")
+    background_color = factory.Faker("hex_color")
 
 class WordPayloadFactory(factory.DictFactory):
     definition = factory.Faker("word")
@@ -109,6 +110,7 @@ class CollectionFactory(factory.django.DjangoModelFactory):
     name = factory.Faker("word")
     description = factory.Faker("sentence", nb_words=10)
     image_url = factory.Faker("url")
+    background_color = factory.Faker("hex_color")
 
 class WordFactory(factory.django.DjangoModelFactory):
     class Meta:

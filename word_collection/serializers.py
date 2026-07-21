@@ -24,7 +24,7 @@ class CollectionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Collection
-        fields = ["owner", "id", "name", "description", "words", "tags", "image_url"]
+        fields = ["owner", "id", "name", "description", "words", "tags", "image_url", "background_color"]
 
 class WordFormSerializer(serializers.ModelSerializer):
     word_id = serializers.IntegerField(source="word.id", read_only=True)

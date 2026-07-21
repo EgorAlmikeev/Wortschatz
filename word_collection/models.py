@@ -15,6 +15,8 @@ class Collection(OwnedModelMixin, models.Model):
     tags = models.ManyToManyField("Tag", related_name="collections")
     # Image URL for the collection
     image_url = models.TextField(max_length=200, null=True)
+    # Hex color code
+    background_color = models.TextField(max_length=7, null=True)
 
     def __str__(self):
         return self.name
