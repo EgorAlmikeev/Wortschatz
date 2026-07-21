@@ -49,13 +49,14 @@ class TestCollectionModel:
         assert response.status_code == 404
 
     @pytest.mark.django_db
-    def test_collection_with_words(self):
+    def test_collection_add_word(self):
         collection, _ = WordCollectionMocups.create_collection(self.user)
         word, _ = WordCollectionMocups.create_word(self.user)
 
+        assert word.id not in [w["id"] for w in collection.words.all().values("id")]
+
         response = self.client.post(f"/api/collections/{collection.id}/add_word/", {"word_id": word.id}, format="json")
-        assert response.status_code == 200
-        assert any(word_id == word.id for word_id in response.data["words"])
+        assert response.status_code == 204
 
         response = self.client.get(f"/api/collections/{collection.id}/")
         assert response.status_code == 200
@@ -64,3 +65,22 @@ class TestCollectionModel:
         response = self.client.get(f"/api/words/{word.id}/")
         assert response.status_code == 200
         assert any(collection_id == collection.id for collection_id in response.data["collections"])
+
+    @pytest.mark.django_db
+    def test_collection_remove_word(self):
+        collection, _ = WordCollectionMocups.create_collection(self.user)
+        word, _ = WordCollectionMocups.create_word(self.user)
+
+        collection.words.add(word)
+        assert any(word_id == word.id for word_id in collection.words.values_list("id", flat=True))
+
+        response = self.client.delete(f"/api/collections/{collection.id}/remove_word/", {"word_id": word.id}, format="json")
+        assert response.status_code == 204
+
+        response = self.client.get(f"/api/collections/{collection.id}/")
+        assert response.status_code == 200
+        assert all(word_id != word.id for word_id in response.data["words"])
+
+        response = self.client.get(f"/api/words/{word.id}/")
+        assert response.status_code == 200
+        assert all(collection_id != collection.id for collection_id in response.data["collections"])

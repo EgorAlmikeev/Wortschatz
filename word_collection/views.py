@@ -86,7 +86,7 @@ class CollectionViewSet(viewsets.ModelViewSet):
 
         collection.words.add(word)
 
-        return Response(status=status.HTTP_200_OK, data=CollectionSerializer(collection).data)
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
     @action(detail=True, methods=["delete"])
     def remove_word(self, request, pk=None):
@@ -99,7 +99,7 @@ class CollectionViewSet(viewsets.ModelViewSet):
 
         collection.words.remove(word)
 
-        return Response(status=status.HTTP_200_OK, data=CollectionSerializer(collection).data)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 def my_words(request: HttpRequest):
     return render(request, "my_words.html")
