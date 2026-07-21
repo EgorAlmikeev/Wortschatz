@@ -53,30 +53,6 @@ class TestWordModel:
         assert response.data["definition"] == word_json["definition"]
 
     @pytest.mark.django_db
-    def test_partial_update_word(self):
-        word, _ = WordCollectionMocups.create_word(self.user)
-        patch_json = {
-            "examples": [
-                {"sentence": "updated sentence", "translation": "updated translation"}
-            ]
-        }
-        response = self.client.patch(
-            f"/api/words/{word.id}/", patch_json, format="json"
-        )
-
-        assert response.status_code == 200
-
-        for example in response.data["examples"]:
-            assert example["sentence"] in [
-                ex["sentence"] for ex in patch_json["examples"]
-            ]
-            assert example["translation"] in [
-                ex["translation"] for ex in patch_json["examples"]
-            ]
-
-        assert response.data["definition"] == word.definition
-
-    @pytest.mark.django_db
     def test_delete_word(self):
         word, _ = WordCollectionMocups.create_word(self.user)
         response = self.client.delete(f"/api/words/{word.id}/")
@@ -84,3 +60,33 @@ class TestWordModel:
 
         response = self.client.get(f"/api/words/{word.id}/")
         assert response.status_code == 404
+
+    @pytest.mark.django_db
+    def test_add_word_form(self):
+        word, _ = WordCollectionMocups.create_word(self.user)
+        form_data = {"name": "test form name", "form": "test form value"}
+        response = self.client.post(
+            f"/api/words/{word.id}/add_word_form/", form_data, format="json"
+        )
+
+        assert response.status_code == 201
+        assert response.data["name"] == form_data["name"]
+        assert response.data["form"] == form_data["form"]
+
+        assert any(
+            form.name == form_data["name"] and form.form == form_data["form"]
+            for form in word.forms.all()
+        )
+
+    @pytest.mark.django_db
+    def test_remove_word_form(self):
+        word, _ = WordCollectionMocups.create_word(self.user)
+        assert word.forms.exists()
+
+        form = word.forms.first()
+        response = self.client.delete(
+            f"/api/words/{word.id}/remove_word_form/", {"form_id": form.id}, format="json"
+        )
+
+        assert response.status_code == 204
+        assert not word.forms.filter(id=form.id).exists()

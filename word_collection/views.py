@@ -14,6 +14,7 @@ from .serializers import (
     TagSerializer,
     WordDetailSerializer,
     WordListSerializer,
+    WordFormSerializer,
 )
 from .permissions import IsOwnerOrReadOnly
 from .filters import WordFilter
@@ -52,6 +53,22 @@ class WordViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+    @action(detail=True, methods=["post"])
+    def add_word_form(self, request, pk=None):
+        word = self.get_object()
+        form_data = request.data
+        serializer = WordFormSerializer(data=form_data)
+        serializer.is_valid(raise_exception=True)
+        word.forms.create(**serializer.validated_data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=["delete"])
+    def remove_word_form(self, request, pk=None):
+        word = self.get_object()
+        form_id = request.data.get("form_id")
+        form = get_object_or_404(word.forms, id=form_id)
+        form.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class TagViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
