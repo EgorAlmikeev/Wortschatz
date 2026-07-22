@@ -121,3 +121,32 @@ class TestWordModel:
 
         assert response.status_code == 204
         assert not word.examples.filter(id=example.id).exists()
+    
+    @pytest.mark.django_db
+    def test_add_word_translation(self):
+        word, _ = WordCollectionMocups.create_word(self.user)
+        translation_data = {"translation": "test translation"}
+        response = self.client.post(
+            f"/api/words/{word.id}/add_word_translation/", translation_data, format="json"
+        )
+
+        assert response.status_code == 201
+        assert response.data["translation"] == translation_data["translation"]
+
+        assert any(
+            translation.translation == translation_data["translation"]
+            for translation in word.translations.all()
+        )
+    
+    @pytest.mark.django_db
+    def test_remove_word_translation(self):
+        word, _ = WordCollectionMocups.create_word(self.user)
+        assert word.translations.exists()
+
+        translation = word.translations.first()
+        response = self.client.delete(
+            f"/api/words/{word.id}/remove_word_translation/", {"translation_id": translation.id}, format="json"
+        )
+
+        assert response.status_code == 204
+        assert not word.translations.filter(id=translation.id).exists()

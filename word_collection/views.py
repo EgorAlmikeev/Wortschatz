@@ -90,6 +90,23 @@ class WordViewSet(viewsets.ModelViewSet):
         example.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @action(detail=True, methods=["post"])
+    def add_word_translation(self, request, pk=None):
+        word = self.get_object()
+        translation_data = request.data
+        serializer = WordTranslationSerializer(data=translation_data)
+        serializer.is_valid(raise_exception=True)
+        word.translations.create(**serializer.validated_data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    @action(detail=True, methods=["delete"])
+    def remove_word_translation(self, request, pk=None):
+        word = self.get_object()
+        translation_id = request.data.get("translation_id")
+        translation = get_object_or_404(word.translations, id=translation_id)
+        translation.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class TagViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
