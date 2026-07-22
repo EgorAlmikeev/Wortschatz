@@ -68,7 +68,7 @@ class WordViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["delete"])
     def remove_word_form(self, request, pk=None):
         word = self.get_object()
-        form_id = request.data.get("form_id")
+        form_id = request.data.get("item_id")
         form = get_object_or_404(word.forms, id=form_id)
         form.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -85,7 +85,7 @@ class WordViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["delete"])
     def remove_word_example(self, request, pk=None):
         word = self.get_object()
-        example_id = request.data.get("example_id")
+        example_id = request.data.get("item_id")
         example = get_object_or_404(word.examples, id=example_id)
         example.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -102,9 +102,26 @@ class WordViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["delete"])
     def remove_word_translation(self, request, pk=None):
         word = self.get_object()
-        translation_id = request.data.get("translation_id")
+        translation_id = request.data.get("item_id")
         translation = get_object_or_404(word.translations, id=translation_id)
         translation.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    @action(detail=True, methods=["post"])
+    def add_word_preposition_and_case_with_translation(self, request, pk=None):
+        word = self.get_object()
+        data = request.data
+        serializer = WordPrepositionAndCaseWithTranslationSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        word.prepositions_and_cases_with_translations.create(**serializer.validated_data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    @action(detail=True, methods=["delete"])
+    def remove_word_preposition_and_case_with_translation(self, request, pk=None):
+        word = self.get_object()
+        item_id = request.data.get("item_id")
+        item = get_object_or_404(word.prepositions_and_cases_with_translations, id=item_id)
+        item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

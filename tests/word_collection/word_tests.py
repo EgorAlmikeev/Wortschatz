@@ -85,7 +85,7 @@ class TestWordModel:
 
         form = word.forms.first()
         response = self.client.delete(
-            f"/api/words/{word.id}/remove_word_form/", {"form_id": form.id}, format="json"
+            f"/api/words/{word.id}/remove_word_form/", {"item_id": form.id}, format="json"
         )
 
         assert response.status_code == 204
@@ -116,7 +116,7 @@ class TestWordModel:
 
         example = word.examples.first()
         response = self.client.delete(
-            f"/api/words/{word.id}/remove_word_example/", {"example_id": example.id}, format="json"
+            f"/api/words/{word.id}/remove_word_example/", {"item_id": example.id}, format="json"
         )
 
         assert response.status_code == 204
@@ -145,8 +145,44 @@ class TestWordModel:
 
         translation = word.translations.first()
         response = self.client.delete(
-            f"/api/words/{word.id}/remove_word_translation/", {"translation_id": translation.id}, format="json"
+            f"/api/words/{word.id}/remove_word_translation/", {"item_id": translation.id}, format="json"
         )
 
         assert response.status_code == 204
         assert not word.translations.filter(id=translation.id).exists()
+
+    @pytest.mark.django_db
+    def test_add_word_preposition_and_case_with_translation(self):
+        word, _ = WordCollectionMocups.create_word(self.user)
+        data = {
+            "preposition": "test preposition",
+            "case": "test case",
+            "translation": "test translation"
+        }
+        response = self.client.post(
+            f"/api/words/{word.id}/add_word_preposition_and_case_with_translation/", data, format="json"
+        )
+
+        assert response.status_code == 201
+        assert response.data["preposition"] == data["preposition"]
+        assert response.data["case"] == data["case"]
+        assert response.data["translation"] == data["translation"]
+
+        assert any(
+            pcwt.preposition == data["preposition"]
+            and pcwt.case == data["case"]
+            and pcwt.translation == data["translation"]
+            for pcwt in word.prepositions_and_cases_with_translations.all())
+        
+    @pytest.mark.django_db
+    def test_remove_word_preposition_and_case_with_translation(self):
+        word, _ = WordCollectionMocups.create_word(self.user)
+        assert word.prepositions_and_cases_with_translations.exists()
+
+        item = word.prepositions_and_cases_with_translations.first()
+        response = self.client.delete(
+            f"/api/words/{word.id}/remove_word_preposition_and_case_with_translation/", {"item_id": item.id}, format="json"
+        )
+
+        assert response.status_code == 204
+        assert not word.prepositions_and_cases_with_translations.filter(id=item.id).exists()
