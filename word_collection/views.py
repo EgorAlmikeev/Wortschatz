@@ -15,6 +15,9 @@ from .serializers import (
     WordDetailSerializer,
     WordListSerializer,
     WordFormSerializer,
+    WordExampleSerializer,
+    WordTranslationSerializer,
+    WordPrepositionAndCaseWithTranslationSerializer,
 )
 from .permissions import IsOwnerOrReadOnly
 from .filters import WordFilter
@@ -69,6 +72,24 @@ class WordViewSet(viewsets.ModelViewSet):
         form = get_object_or_404(word.forms, id=form_id)
         form.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    @action(detail=True, methods=["post"])
+    def add_word_example(self, request, pk=None):
+        word = self.get_object()
+        example_data = request.data
+        serializer = WordExampleSerializer(data=example_data)
+        serializer.is_valid(raise_exception=True)
+        word.examples.create(**serializer.validated_data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=["delete"])
+    def remove_word_example(self, request, pk=None):
+        word = self.get_object()
+        example_id = request.data.get("example_id")
+        example = get_object_or_404(word.examples, id=example_id)
+        example.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class TagViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
@@ -79,6 +100,7 @@ class TagViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         return serializer.save(owner=self.request.user)
+
 
 class CollectionViewSet(viewsets.ModelViewSet):
     serializer_class = CollectionSerializer

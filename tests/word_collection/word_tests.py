@@ -90,3 +90,34 @@ class TestWordModel:
 
         assert response.status_code == 204
         assert not word.forms.filter(id=form.id).exists()
+
+    @pytest.mark.django_db
+    def test_add_word_example(self):
+        word, _ = WordCollectionMocups.create_word(self.user)
+        example_data = {"sentence": "test sentence", "translation": "test translation"}
+        response = self.client.post(
+            f"/api/words/{word.id}/add_word_example/", example_data, format="json"
+        )
+
+        assert response.status_code == 201
+        assert response.data["sentence"] == example_data["sentence"]
+        assert response.data["translation"] == example_data["translation"]
+
+        assert any(
+            example.sentence == example_data["sentence"]
+            and example.translation == example_data["translation"]
+            for example in word.examples.all()
+        )
+    
+    @pytest.mark.django_db
+    def test_remove_word_example(self):
+        word, _ = WordCollectionMocups.create_word(self.user)
+        assert word.examples.exists()
+
+        example = word.examples.first()
+        response = self.client.delete(
+            f"/api/words/{word.id}/remove_word_example/", {"example_id": example.id}, format="json"
+        )
+
+        assert response.status_code == 204
+        assert not word.examples.filter(id=example.id).exists()
