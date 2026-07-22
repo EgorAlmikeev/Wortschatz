@@ -84,11 +84,11 @@ class WordDetailSerializer(serializers.ModelSerializer):
     part_of_speech_name = serializers.CharField(
         source="get_part_of_speech_id_display", read_only=True
     )
-    translations = WordTranslationSerializer(many=True)
-    examples = WordExampleSerializer(many=True)
-    forms = WordFormSerializer(many=True)
+    translations = WordTranslationSerializer(many=True, read_only=True)
+    examples = WordExampleSerializer(many=True, read_only=True)
+    forms = WordFormSerializer(many=True, read_only=True)
     prepositions_and_cases_with_translations = (
-        WordPrepositionAndCaseWithTranslationSerializer(many=True)
+        WordPrepositionAndCaseWithTranslationSerializer(many=True, read_only=True)
     )
     collections = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
