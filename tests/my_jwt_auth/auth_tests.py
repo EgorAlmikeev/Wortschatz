@@ -3,6 +3,7 @@ from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 
 from my_jwt_auth.mockups import Mockups as JWTMockups
+from word_collection.models import Collection, Word
 
 class TestJWTAuth:
     def setup_method(self, method):
@@ -97,3 +98,31 @@ class TestRegistration:
         user = User.objects.get(username=data['username'])
         assert user.is_staff is False
         assert user.is_superuser is False
+
+    @pytest.mark.django_db
+    def test_register_user_creates_default_collection(self):
+        data = {'username': 'new_user', 'password': 'a-strong-passw0rd'}
+
+        self.client.post('/auth/register/', data, format='json')
+        user = User.objects.get(username=data['username'])
+
+        assert Collection.objects.filter(owner=user).count() == 1
+        assert Word.objects.filter(owner=user).count() == 5
+
+        collection = Collection.objects.get(owner=user)
+        assert collection.name
+        assert collection.description
+        assert collection.image_url
+        assert collection.background_color
+        assert collection.words.count() == 5
+        assert collection.tags.count() >= 1
+
+        for word in Word.objects.filter(owner=user):
+            assert word.definition
+            assert word.genus_id is not None
+            assert word.part_of_speech_id is not None
+            assert word.image_url
+            assert word.translations.exists()
+            assert word.examples.exists()
+            assert word.forms.exists()
+            assert word.prepositions_and_cases_with_translations.exists()
