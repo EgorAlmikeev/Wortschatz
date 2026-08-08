@@ -41,4 +41,59 @@ class TestJWTAuth:
         response = self.client.post('/auth/token/verify/', {'token': access_token}, format='json')
 
         assert response.status_code == 200
-        
+
+
+class TestRegistration:
+    def setup_method(self, method):
+        print()
+        print(f"=== preparing client for a '{method.__name__}' test ===")
+        self.client = APIClient()
+
+    @pytest.mark.django_db
+    def test_register_user(self):
+        data = {'username': 'new_user', 'password': 'a-strong-passw0rd'}
+
+        response = self.client.post('/auth/register/', data, format='json')
+
+        assert response.status_code == 201
+        assert response.data['username'] == data['username']
+        assert 'password' not in response.data
+
+        user = User.objects.get(username=data['username'])
+        assert user.check_password(data['password'])
+        assert user.is_staff is False
+        assert user.is_superuser is False
+
+    @pytest.mark.django_db
+    def test_register_user_duplicate_username(self):
+        data = {'username': JWTMockups.user['username'], 'password': 'a-strong-passw0rd'}
+        User.objects.create_user(username=data['username'], password='irrelevant')
+
+        response = self.client.post('/auth/register/', data, format='json')
+
+        assert response.status_code == 400
+
+    @pytest.mark.django_db
+    def test_register_user_weak_password(self):
+        data = {'username': 'new_user', 'password': '12345'}
+
+        response = self.client.post('/auth/register/', data, format='json')
+
+        assert response.status_code == 400
+        assert not User.objects.filter(username=data['username']).exists()
+
+    @pytest.mark.django_db
+    def test_register_user_cannot_set_admin_flags(self):
+        data = {
+            'username': 'new_user',
+            'password': 'a-strong-passw0rd',
+            'is_staff': True,
+            'is_superuser': True,
+        }
+
+        response = self.client.post('/auth/register/', data, format='json')
+
+        assert response.status_code == 201
+        user = User.objects.get(username=data['username'])
+        assert user.is_staff is False
+        assert user.is_superuser is False
