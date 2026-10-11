@@ -16,7 +16,7 @@ class TestJWTAuth:
     def test_authenticate_user(self):
         data = JWTMockups.user
 
-        response = self.client.post('/auth/token/', data, format='json')
+        response = self.client.post('/api/auth/token/', data, format='json')
 
         assert response.status_code == 200
         assert 'access' in response.data
@@ -25,10 +25,10 @@ class TestJWTAuth:
     @pytest.mark.django_db
     def test_refresh_token(self):
         data = JWTMockups.user
-        response = self.client.post('/auth/token/', data, format='json')
+        response = self.client.post('/api/auth/token/', data, format='json')
         refresh_token = response.data['refresh']
 
-        response = self.client.post('/auth/token/refresh/', {'refresh': refresh_token}, format='json')
+        response = self.client.post('/api/auth/token/refresh/', {'refresh': refresh_token}, format='json')
 
         assert response.status_code == 200
         assert 'access' in response.data
@@ -36,10 +36,10 @@ class TestJWTAuth:
     @pytest.mark.django_db
     def test_verify_token(self):
         data = JWTMockups.user
-        response = self.client.post('/auth/token/', data, format='json')
+        response = self.client.post('/api/auth/token/', data, format='json')
         access_token = response.data['access']
 
-        response = self.client.post('/auth/token/verify/', {'token': access_token}, format='json')
+        response = self.client.post('/api/auth/token/verify/', {'token': access_token}, format='json')
 
         assert response.status_code == 200
 
@@ -54,7 +54,7 @@ class TestRegistration:
     def test_register_user(self):
         data = {'username': 'new_user', 'password': 'a-strong-passw0rd'}
 
-        response = self.client.post('/auth/register/', data, format='json')
+        response = self.client.post('/api/auth/register/', data, format='json')
 
         assert response.status_code == 201
         assert response.data['username'] == data['username']
@@ -70,7 +70,7 @@ class TestRegistration:
         data = {'username': JWTMockups.user['username'], 'password': 'a-strong-passw0rd'}
         User.objects.create_user(username=data['username'], password='irrelevant')
 
-        response = self.client.post('/auth/register/', data, format='json')
+        response = self.client.post('/api/auth/register/', data, format='json')
 
         assert response.status_code == 400
 
@@ -78,7 +78,7 @@ class TestRegistration:
     def test_register_user_weak_password(self):
         data = {'username': 'new_user', 'password': '12345'}
 
-        response = self.client.post('/auth/register/', data, format='json')
+        response = self.client.post('/api/auth/register/', data, format='json')
 
         assert response.status_code == 400
         assert not User.objects.filter(username=data['username']).exists()
@@ -92,7 +92,7 @@ class TestRegistration:
             'is_superuser': True,
         }
 
-        response = self.client.post('/auth/register/', data, format='json')
+        response = self.client.post('/api/auth/register/', data, format='json')
 
         assert response.status_code == 201
         user = User.objects.get(username=data['username'])
@@ -103,7 +103,7 @@ class TestRegistration:
     def test_register_user_creates_default_collection(self):
         data = {'username': 'new_user', 'password': 'a-strong-passw0rd'}
 
-        self.client.post('/auth/register/', data, format='json')
+        self.client.post('/api/auth/register/', data, format='json')
         user = User.objects.get(username=data['username'])
 
         assert Collection.objects.filter(owner=user).count() == 1

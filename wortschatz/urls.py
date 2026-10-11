@@ -36,7 +36,7 @@ urlpatterns = [
     # Redoc UI
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     # JWT API
-    path('auth/', include(my_jwt_auth.urls)),
+    path('api/auth/', include(my_jwt_auth.urls)),
     # JWT login page
     path('login/', my_jwt_auth.views.login, name='login_page'),
     # JWT registration page
