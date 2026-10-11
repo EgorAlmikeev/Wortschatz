@@ -36,6 +36,8 @@ class WordViewSet(viewsets.ModelViewSet):
     filterset_class = WordFilter
 
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return Word.objects.none()
         qs = Word.objects.filter(owner=self.request.user).order_by("-created_date_time")
         if self.action == "retrieve":
             qs = qs.select_related("owner").prefetch_related(
@@ -130,6 +132,8 @@ class TagViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return Tag.objects.none()
         return Tag.objects.select_related("owner").filter(owner=self.request.user)
 
     def perform_create(self, serializer):
@@ -141,6 +145,8 @@ class CollectionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return Collection.objects.none()
         return Collection.objects.select_related("owner").prefetch_related(
             "words", "tags"
         ).filter(owner=self.request.user)
