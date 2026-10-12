@@ -41,6 +41,18 @@
         fab: document.getElementById("add-word-fab"),
         gameBtn: document.getElementById("game-btn"),
         testBtn: document.getElementById("test-btn"),
+        modalOverlay: document.getElementById("word-modal-overlay"),
+        modalDialog: document.getElementById("word-modal"),
+        modalBack: document.getElementById("modal-back"),
+        modalClose: document.getElementById("modal-close"),
+        modalEdit: document.getElementById("modal-edit"),
+        modalGenus: document.getElementById("modal-genus"),
+        modalDefinition: document.getElementById("modal-definition"),
+        modalPos: document.getElementById("modal-pos"),
+        modalLoading: document.getElementById("modal-loading"),
+        modalSections: document.getElementById("modal-sections"),
+        modalEmpty: document.getElementById("modal-empty"),
+        sectionTemplate: document.getElementById("modal-section-template"),
     };
 
     const state = {
@@ -151,6 +163,16 @@
 
         fitTranslations(translationsEl, word.translation_previews || [], word.translations_count || 0);
 
+        card.tabIndex = 0;
+        card.setAttribute("role", "button");
+        card.addEventListener("click", () => openWordModal(word.id));
+        card.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openWordModal(word.id);
+            }
+        });
+
         return card;
     }
 
@@ -179,6 +201,179 @@
     window.addEventListener("resize", () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(refitAllTranslations, 150);
+    });
+
+    const SECTION_ICONS = {
+        book: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>',
+        chat: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>',
+        layers: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>',
+    };
+
+    function buildModalSection(iconKey, colorClass, title) {
+        const fragment = els.sectionTemplate.content.cloneNode(true);
+        const section = fragment.querySelector(".word-modal-section");
+        const icon = section.querySelector(".section-icon");
+        icon.classList.add(colorClass);
+        icon.innerHTML = SECTION_ICONS[iconKey];
+        section.querySelector("h3").textContent = title;
+        const content = section.querySelector(".word-modal-section-content");
+        return { section, content };
+    }
+
+    function buildTranslationsSection(translations) {
+        if (!translations.length) return null;
+        const { section, content } = buildModalSection("book", "mint", "Переводы");
+        const list = document.createElement("ul");
+        list.className = "translation-list";
+        translations.forEach((t) => {
+            const li = document.createElement("li");
+            li.textContent = t.translation;
+            list.appendChild(li);
+        });
+        content.appendChild(list);
+        return section;
+    }
+
+    function buildExamplesSection(examples) {
+        if (!examples.length) return null;
+        const { section, content } = buildModalSection("chat", "peach", "Примеры употребления");
+        const list = document.createElement("div");
+        list.className = "example-list";
+        examples.forEach((ex) => {
+            const item = document.createElement("div");
+            const sentence = document.createElement("p");
+            sentence.className = "example-sentence";
+            sentence.textContent = ex.sentence;
+            const translation = document.createElement("p");
+            translation.className = "example-translation";
+            translation.textContent = ex.translation;
+            item.appendChild(sentence);
+            item.appendChild(translation);
+            list.appendChild(item);
+        });
+        content.appendChild(list);
+        return section;
+    }
+
+    function buildFormsSection(forms) {
+        if (!forms.length) return null;
+        const { section, content } = buildModalSection("layers", "lavender", "Формы слова");
+        const list = document.createElement("div");
+        list.className = "form-list";
+        forms.forEach((f) => {
+            const row = document.createElement("div");
+            row.className = "form-row";
+            const name = document.createElement("span");
+            name.className = "form-name";
+            name.textContent = f.name;
+            const value = document.createElement("span");
+            value.className = "form-value";
+            value.textContent = f.form;
+            row.appendChild(name);
+            row.appendChild(value);
+            list.appendChild(row);
+        });
+        content.appendChild(list);
+        return section;
+    }
+
+    function buildPrepositionsSection(items) {
+        if (!items.length) return null;
+        const { section, content } = buildModalSection("book", "rose", "Предлоги с падежами");
+        const list = document.createElement("div");
+        list.className = "preposition-list";
+        items.forEach((p) => {
+            const item = document.createElement("div");
+            const head = document.createElement("div");
+            head.className = "preposition-head";
+            head.appendChild(makePill(p.preposition, true));
+            const caseLabel = document.createElement("span");
+            caseLabel.className = "form-name";
+            caseLabel.textContent = p.case;
+            head.appendChild(caseLabel);
+            const translation = document.createElement("p");
+            translation.className = "preposition-translation";
+            translation.textContent = p.translation;
+            item.appendChild(head);
+            item.appendChild(translation);
+            list.appendChild(item);
+        });
+        content.appendChild(list);
+        return section;
+    }
+
+    function closeWordModal() {
+        els.modalOverlay.classList.remove("is-open");
+        document.body.style.overflow = "";
+        setTimeout(() => {
+            els.modalOverlay.hidden = true;
+        }, 200);
+    }
+
+    async function openWordModal(wordId) {
+        els.modalOverlay.hidden = false;
+        document.body.style.overflow = "hidden";
+        requestAnimationFrame(() => els.modalOverlay.classList.add("is-open"));
+
+        els.modalLoading.hidden = false;
+        els.modalSections.hidden = true;
+        els.modalEmpty.hidden = true;
+        els.modalSections.innerHTML = "";
+        els.modalDefinition.textContent = "";
+        els.modalPos.textContent = "";
+        els.modalGenus.hidden = true;
+
+        try {
+            const response = await apiFetch(`/api/words/${wordId}/`);
+            if (!response.ok) {
+                closeWordModal();
+                showToast("Не удалось загрузить слово");
+                return;
+            }
+            const word = await response.json();
+
+            els.modalDefinition.textContent = word.definition;
+            const article = GENUS_ARTICLE[word.genus_id];
+            if (article) {
+                els.modalGenus.textContent = article;
+                els.modalGenus.hidden = false;
+            }
+            els.modalPos.textContent = PART_OF_SPEECH_LABEL[word.part_of_speech_id] || "";
+
+            const sections = [
+                buildTranslationsSection(word.translations || []),
+                buildExamplesSection(word.examples || []),
+                buildFormsSection(word.forms || []),
+                buildPrepositionsSection(word.prepositions_and_cases_with_translations || []),
+            ].filter(Boolean);
+
+            els.modalLoading.hidden = true;
+
+            if (sections.length === 0) {
+                els.modalEmpty.hidden = false;
+                return;
+            }
+
+            sections.forEach((section) => els.modalSections.appendChild(section));
+            els.modalSections.hidden = false;
+        } catch (err) {
+            closeWordModal();
+            showToast("Не удалось загрузить слово");
+        }
+    }
+
+    els.modalBack.addEventListener("click", closeWordModal);
+    els.modalClose.addEventListener("click", closeWordModal);
+    els.modalEdit.addEventListener("click", comingSoon);
+    els.modalOverlay.addEventListener("click", (event) => {
+        if (event.target === els.modalOverlay) {
+            closeWordModal();
+        }
+    });
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !els.modalOverlay.hidden) {
+            closeWordModal();
+        }
     });
 
     async function loadWords() {
