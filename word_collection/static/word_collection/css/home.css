@@ -380,6 +380,11 @@
     gap: 8px;
 }
 
+.preposition-example {
+    font-weight: 600;
+    margin-top: 8px;
+}
+
 .preposition-translation {
     color: var(--text-muted);
     margin-top: 2px;

@@ -55,7 +55,7 @@ class WordPrepositionAndCaseWithTranslationSerializer(serializers.ModelSerialize
 
     class Meta:
         model = WordPrepositionAndCaseWithTranslation
-        fields = ["id", "word_id", "preposition", "case", "translation"]
+        fields = ["id", "word_id", "preposition", "case", "translation", "example"]
 
 
 class WordListSerializer(serializers.ModelSerializer):

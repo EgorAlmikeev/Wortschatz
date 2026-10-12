@@ -291,11 +291,19 @@
             caseLabel.className = "form-name";
             caseLabel.textContent = p.case;
             head.appendChild(caseLabel);
-            const translation = document.createElement("p");
-            translation.className = "preposition-translation";
-            translation.textContent = p.translation;
             item.appendChild(head);
-            item.appendChild(translation);
+            if (p.example) {
+                const example = document.createElement("p");
+                example.className = "preposition-example";
+                example.textContent = p.example;
+                item.appendChild(example);
+            }
+            if (p.translation) {
+                const translation = document.createElement("p");
+                translation.className = "preposition-translation";
+                translation.textContent = p.translation;
+                item.appendChild(translation);
+            }
             list.appendChild(item);
         });
         content.appendChild(list);

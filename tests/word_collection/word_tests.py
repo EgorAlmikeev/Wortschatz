@@ -157,7 +157,8 @@ class TestWordModel:
         data = {
             "preposition": "test preposition",
             "case": "test case",
-            "translation": "test translation"
+            "translation": "test translation",
+            "example": "test example",
         }
         response = self.client.post(
             f"/api/words/{word.id}/add_word_preposition_and_case_with_translation/", data, format="json"
@@ -167,13 +168,37 @@ class TestWordModel:
         assert response.data["preposition"] == data["preposition"]
         assert response.data["case"] == data["case"]
         assert response.data["translation"] == data["translation"]
+        assert response.data["example"] == data["example"]
 
         assert any(
             pcwt.preposition == data["preposition"]
             and pcwt.case == data["case"]
             and pcwt.translation == data["translation"]
+            and pcwt.example == data["example"]
             for pcwt in word.prepositions_and_cases_with_translations.all())
-        
+
+    @pytest.mark.django_db
+    def test_add_word_preposition_and_case_with_translation_without_translation(self):
+        word, _ = WordCollectionMocups.create_word(self.user)
+        data = {
+            "preposition": "test preposition",
+            "case": "test case",
+        }
+        response = self.client.post(
+            f"/api/words/{word.id}/add_word_preposition_and_case_with_translation/", data, format="json"
+        )
+
+        assert response.status_code == 201
+        assert response.data["preposition"] == data["preposition"]
+        assert response.data["case"] == data["case"]
+        assert not response.data["translation"]
+
+        assert any(
+            pcwt.preposition == data["preposition"]
+            and pcwt.case == data["case"]
+            and not pcwt.translation
+            for pcwt in word.prepositions_and_cases_with_translations.all())
+
     @pytest.mark.django_db
     def test_remove_word_preposition_and_case_with_translation(self):
         word, _ = WordCollectionMocups.create_word(self.user)

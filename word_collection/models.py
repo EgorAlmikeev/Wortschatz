@@ -86,7 +86,9 @@ class WordPrepositionAndCaseWithTranslation(models.Model):
     # Case associated with the preposition
     case = models.TextField(max_length=100)
     # Translation of the preposition and case combination
-    translation = models.TextField(max_length=100)
+    translation = models.TextField(max_length=100, null=True, blank=True)
+    # Example sentence showing the preposition and case in use
+    example = models.TextField(max_length=200, null=True, blank=True)
 
 
 class Word(OwnedModelMixin, models.Model):

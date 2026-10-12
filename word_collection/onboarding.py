@@ -20,6 +20,7 @@ DEFAULT_WORDS = [
                 "preposition": "in",
                 "case": "Dativ",
                 "translation": "in the house (location)",
+                "example": "Wir sind im Haus.",
             }
         ],
     },
@@ -37,7 +38,12 @@ DEFAULT_WORDS = [
         ],
         "forms": [{"name": "Plural", "form": "Katzen"}],
         "prepositions_and_cases_with_translations": [
-            {"preposition": "mit", "case": "Dativ", "translation": "with the cat"}
+            {
+                "preposition": "mit",
+                "case": "Dativ",
+                "translation": "with the cat",
+                "example": "Ich spiele mit der Katze.",
+            }
         ],
     },
     {
@@ -58,6 +64,7 @@ DEFAULT_WORDS = [
                 "preposition": "ohne",
                 "case": "Akkusativ",
                 "translation": "without the dog",
+                "example": "Ich gehe nie ohne den Hund spazieren.",
             }
         ],
     },
@@ -79,6 +86,7 @@ DEFAULT_WORDS = [
                 "preposition": "über",
                 "case": "Akkusativ",
                 "translation": "about the book (topic)",
+                "example": "Wir sprechen über das Buch.",
             }
         ],
     },
@@ -100,6 +108,7 @@ DEFAULT_WORDS = [
                 "preposition": "auf",
                 "case": "Dativ",
                 "translation": "on the table (location)",
+                "example": "Das Essen steht auf dem Tisch.",
             }
         ],
     },

@@ -84,6 +84,7 @@ class WordPayloadFactory(factory.DictFactory):
                     "preposition": fake.word(),
                     "case": fake.word(),
                     "translation": fake.word(),
+                    "example": fake.sentence(nb_words=6),
                 }
                 for _ in range(2)
             ]
@@ -184,6 +185,7 @@ class WordFactory(factory.django.DjangoModelFactory):
                     "preposition": fake.word(),
                     "case": fake.word(),
                     "translation": fake.word(),
+                    "example": fake.sentence(nb_words=6),
                 }
                 for _ in range(2)
             ]
