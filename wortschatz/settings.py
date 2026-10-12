@@ -64,6 +64,7 @@ SPECTACULAR_SETTINGS = {
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -156,6 +157,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+
+# "wortschatz" itself isn't in INSTALLED_APPS (it's the project package, not
+# a Django app), so AppDirectoriesFinder can't see wortschatz/static/ on its
+# own — mirrors the explicit TEMPLATES DIRS entry for wortschatz/templates/.
+STATICFILES_DIRS = [BASE_DIR / "wortschatz/static"]
+
+# gunicorn (used in docker-compose) doesn't serve static files on its own —
+# WhiteNoise serves them directly from the WSGI app, collected here by
+# `collectstatic` (see entrypoint.sh). Deliberately not using a hashed/
+# manifest storage backend: that requires collectstatic to have run before
+# {% static %} can resolve anything, which would break `manage.py runserver`
+# for local dev (see CLAUDE.md) unless collectstatic is run first there too.
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

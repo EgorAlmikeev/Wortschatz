@@ -9,3 +9,4 @@ __pycache__
 .venv
 .idea
 CLAUDE.md
+/staticfiles

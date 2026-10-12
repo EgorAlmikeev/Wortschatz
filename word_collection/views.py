@@ -1,11 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action
-from django.http import HttpRequest
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Collection, Tag, Word
@@ -47,7 +46,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 "prepositions_and_cases_with_translations",
             )
         else:
-            qs = qs.select_related("owner")
+            qs = qs.select_related("owner").prefetch_related("translations")
         return qs
 
     def get_serializer_class(self):
@@ -179,6 +178,3 @@ class CollectionViewSet(viewsets.ModelViewSet):
         collection.words.remove(word)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-def my_words(request: HttpRequest):
-    return render(request, "my_words.html")

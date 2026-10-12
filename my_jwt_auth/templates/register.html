@@ -1,19 +1,67 @@
-<!DOCTYPE html>
-<html lang="de">
+{% extends 'base.html' %}
+{% load static %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Registrierung</title>
-</head>
+{% block title %}Регистрация — Wortschatz{% endblock %}
 
-<body>
-    <h2>Registrieren</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Registrieren</button>
-    </form>
-    <a href="/auth/login/">Schon ein Konto? Einloggen</a>
-</body>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'my_jwt_auth/css/auth.css' %}">
+{% endblock %}
 
-</html>
+{% block content %}
+<div class="auth-shell">
+    <div class="auth-art">
+        <span class="auth-art-blob b1"></span>
+        <span class="auth-art-blob b2"></span>
+        <span class="auth-art-blob b3"></span>
+        <div class="auth-art-content">
+            <div class="auth-art-brand">
+                <span class="brand-dot"></span>
+                Wortschatz
+            </div>
+            <h2>Начни пополнять словарь уже сегодня</h2>
+            <p>Создайте аккаунт — мы сразу подготовим стартовую подборку слов, чтобы было с чего начать.</p>
+        </div>
+    </div>
+
+    <div class="auth-form-panel">
+        <div class="card auth-card">
+            <div class="avatar">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="4"></circle>
+                    <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+                </svg>
+            </div>
+            <h1>Создать аккаунт</h1>
+            <p class="auth-subtitle">Это займёт меньше минуты</p>
+
+            <div class="auth-error" id="auth-error"></div>
+
+            <form id="register-form" novalidate>
+                <div class="field">
+                    <label for="username">Логин</label>
+                    <input class="input" type="text" id="username" name="username" placeholder="Придумайте логин"
+                        autocomplete="username" required>
+                </div>
+                <div class="field">
+                    <label for="password">Пароль</label>
+                    <input class="input" type="password" id="password" name="password" placeholder="Придумайте пароль"
+                        autocomplete="new-password" required>
+                </div>
+                <div class="field">
+                    <label for="password2">Подтвердите пароль</label>
+                    <input class="input" type="password" id="password2" name="password2" placeholder="Повторите пароль"
+                        autocomplete="new-password" required>
+                </div>
+                <button type="submit" class="btn btn-mint btn-block" id="register-submit">Зарегистрироваться</button>
+            </form>
+
+            <p class="auth-footer">Уже есть аккаунт? <a href="{% url 'login_page' %}">Войти</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'my_jwt_auth/js/register.js' %}"></script>
+{% endblock %}

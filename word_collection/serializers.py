@@ -62,6 +62,8 @@ class WordListSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source="owner.id")
     genus_name = serializers.CharField(source="get_genus_id_display")
     part_of_speech_name = serializers.CharField(source="get_part_of_speech_id_display")
+    translation_previews = serializers.SerializerMethodField()
+    translations_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Word
@@ -75,7 +77,16 @@ class WordListSerializer(serializers.ModelSerializer):
             "genus_id",
             "genus_name",
             "image_url",
+            "translation_previews",
+            "translations_count",
         ]
+
+    def get_translation_previews(self, obj):
+        # Relies on the viewset prefetching "translations" to avoid N+1 queries.
+        return [t.translation for t in list(obj.translations.all())[:5]]
+
+    def get_translations_count(self, obj):
+        return len(obj.translations.all())
 
 
 class WordDetailSerializer(serializers.ModelSerializer):

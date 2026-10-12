@@ -1,0 +1,177 @@
+/* The [hidden] attribute must always win over the component display rules below. */
+[hidden] {
+    display: none !important;
+}
+
+.page {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 28px 20px calc(var(--nav-height) + 32px);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.page-header h1 {
+    font-size: 26px;
+    font-weight: 800;
+}
+
+.page-header .icon-btn {
+    display: inline-flex;
+}
+
+/* --- Filter panel --- */
+
+.filter-panel {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* --- Quick actions (Игра / Тест) --- */
+
+.quick-actions {
+    display: flex;
+    gap: 14px;
+}
+
+.quick-action {
+    flex: 1 1 0;
+}
+
+/* --- Results count --- */
+
+.results-count {
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* --- Word grid / cards --- */
+
+.word-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+.word-card {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.word-title {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.word-genus {
+    color: var(--lavender-strong);
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.word-definition {
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.word-translations {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    min-height: 26px;
+}
+
+.word-translations .pill {
+    flex: 0 0 auto;
+}
+
+.word-meta {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    gap: 6px;
+}
+
+/* --- Empty state --- */
+
+.empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-muted);
+}
+
+.empty-state h3 {
+    color: var(--text);
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+/* --- Pagination --- */
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 4px;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+@media (min-width: 560px) {
+    .filter-row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 640px) {
+    .word-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 900px) {
+    .page {
+        max-width: 1040px;
+        padding: 40px 48px 48px;
+    }
+
+    .page-header .icon-btn {
+        display: none;
+    }
+}
+
+@media (min-width: 1240px) {
+    .word-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

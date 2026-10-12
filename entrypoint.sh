@@ -9,6 +9,9 @@ until python manage.py migrate --noinput; do
 done
 echo "Database migrations successfully applied."
 
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
+
 echo "Starting server..."
 exec "$@"
 echo "Server successfully started."

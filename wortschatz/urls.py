@@ -18,7 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
-import word_collection.views
 import word_collection.urls
 import my_jwt_auth.views
 import my_jwt_auth.urls
@@ -41,8 +40,6 @@ urlpatterns = [
     path('login/', my_jwt_auth.views.login, name='login_page'),
     # JWT registration page
     path('register/', my_jwt_auth.views.register, name='register_page'),
-    # Word collection page
-    path('my_words/', word_collection.views.my_words, name='my_words'),
     # Word collection API
     path('api/', include(word_collection.urls)),
 ]

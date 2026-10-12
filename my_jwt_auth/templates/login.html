@@ -1,115 +1,62 @@
-<!DOCTYPE html>
-<html lang="de">
+{% extends 'base.html' %}
+{% load static %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>Einloggen</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f8f9fa;
-        }
+{% block title %}Вход — Wortschatz{% endblock %}
 
-        .login-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'my_jwt_auth/css/auth.css' %}">
+{% endblock %}
 
-        form {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        input {
-            width: 90%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button {
-            width: 90%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        /* .login-button {
-            background-color: #76d7c4;
-            color: white;
-        }
-
-        .login-button:hover {
-            background-color: #4ab7a5;
-        }
-
-        .register-button {
-            background-color: #f8f9fa;
-            color: #333;
-            border: 1px solid #ccc;
-        }
-
-        .register-button:hover {
-            background-color: #dee2e6;
-        } */
-    </style>
-</head>
-
-<body>
-    <div class="login-container">
-        <h2>Einloggen</h2>
-        <form id="loginForm">
-            <input type="text" id="username" placeholder="Benutzername" required>
-            <input type="password" id="password" placeholder="Passwort" required>
-            <button type="submit" class="btn btn-dark">Einloggen</button>
-        </form>
-        <button class="btn btn-light" onclick="window.location.href=`${window.location.origin}/register/`">Sich
-            registrieren</button>
-        <p id="message" style="color: red; font-size: 14px;"></p>
+{% block content %}
+<div class="auth-shell">
+    <div class="auth-art">
+        <span class="auth-art-blob b1"></span>
+        <span class="auth-art-blob b2"></span>
+        <span class="auth-art-blob b3"></span>
+        <div class="auth-art-content">
+            <div class="auth-art-brand">
+                <span class="brand-dot"></span>
+                Wortschatz
+            </div>
+            <h2>Твой личный немецкий словарь</h2>
+            <p>Собирай слова, переводы и примеры в одном месте — и возвращайся к ним в любое время.</p>
+        </div>
     </div>
 
-    <script>
-        document.getElementById("loginForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
+    <div class="auth-form-panel">
+        <div class="card auth-card">
+            <div class="avatar">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="4"></circle>
+                    <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+                </svg>
+            </div>
+            <h1>Добро пожаловать</h1>
+            <p class="auth-subtitle">Войдите в свой аккаунт</p>
 
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-            const apiBaseUrl = window.location.origin;
+            <div class="auth-error" id="auth-error"></div>
 
-            const response = await fetch(`${apiBaseUrl}/auth/token/`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password })
-            });
+            <form id="login-form" novalidate>
+                <div class="field">
+                    <label for="username">Логин</label>
+                    <input class="input" type="text" id="username" name="username" placeholder="Введите логин"
+                        autocomplete="username" required>
+                </div>
+                <div class="field">
+                    <label for="password">Пароль</label>
+                    <input class="input" type="password" id="password" name="password" placeholder="Введите пароль"
+                        autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="btn btn-mint btn-block" id="login-submit">Войти</button>
+            </form>
 
-            const data = await response.json();
-            if (response.ok) {
-                localStorage.setItem("access", data.access);
-                localStorage.setItem("refresh", data.refresh);
-                window.location.href = `${apiBaseUrl}/`
-            } else {
-                document.getElementById("message").textContent = "Falsche Zugangsdaten!";
-            }
-        });
-    </script>
-</body>
+            <p class="auth-footer">Нет аккаунта? <a href="{% url 'register_page' %}">Зарегистрироваться</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-</html>
+{% block extra_js %}
+<script src="{% static 'my_jwt_auth/js/login.js' %}"></script>
+{% endblock %}
