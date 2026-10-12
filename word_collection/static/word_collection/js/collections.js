@@ -16,8 +16,6 @@
         emptyState: document.getElementById("empty-state"),
         cardTemplate: document.getElementById("collection-card-template"),
         fab: document.getElementById("add-collection-fab"),
-        cardsBtn: document.getElementById("cards-btn"),
-        testingBtn: document.getElementById("testing-btn"),
     };
 
     const state = {
@@ -162,8 +160,6 @@
         showToast("Скоро будет доступно");
     }
 
-    els.cardsBtn.addEventListener("click", comingSoon);
-    els.testingBtn.addEventListener("click", comingSoon);
     els.fab.addEventListener("click", comingSoon);
 
     document.querySelectorAll('[data-nav="home"]').forEach((btn) => {
