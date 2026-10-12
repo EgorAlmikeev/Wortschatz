@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from my_jwt_auth.mockups import Mockups as JWTMockups
 from tests.word_collection.mockups import Mockups as WordCollectionMocups
-from word_collection.models import Collection, Word
+from word_collection.models import Collection, PartOfSpeech, Word
 
 class TestJWTAuth:
     def setup_method(self, method):
@@ -108,25 +108,34 @@ class TestRegistration:
         user = User.objects.get(username=data['username'])
 
         assert Collection.objects.filter(owner=user).count() == 1
-        assert Word.objects.filter(owner=user).count() == 5
+        assert Word.objects.filter(owner=user).count() == len(PartOfSpeech.values)
 
         collection = Collection.objects.get(owner=user)
         assert collection.name
         assert collection.description
         assert collection.image_url
         assert collection.background_color
-        assert collection.words.count() == 5
+        assert collection.words.count() == len(PartOfSpeech.values)
         assert collection.tags.count() >= 1
 
-        for word in Word.objects.filter(owner=user):
+        words = Word.objects.filter(owner=user)
+        # One word per part of speech, so a new user can see the full range.
+        assert set(words.values_list('part_of_speech_id', flat=True)) == set(PartOfSpeech.values)
+
+        for word in words:
             assert word.definition
-            assert word.genus_id is not None
             assert word.part_of_speech_id is not None
             assert word.image_url
             assert word.translations.exists()
             assert word.examples.exists()
-            assert word.forms.exists()
-            assert word.prepositions_and_cases_with_translations.exists()
+
+        noun = words.get(part_of_speech_id=PartOfSpeech.NOUN)
+        assert noun.genus_id is not None
+
+        # Forms and preposition/case pairs are only grammatically meaningful
+        # for some parts of speech, but the demo set should show both off.
+        assert words.filter(forms__isnull=False).distinct().exists()
+        assert words.filter(prepositions_and_cases_with_translations__isnull=False).distinct().exists()
 
 
 class TestProfile:
