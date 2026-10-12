@@ -9,3 +9,7 @@ def home(request: HttpRequest):
 
 def collections(request: HttpRequest):
     return render(request, 'collections.html')
+
+
+def collection_detail(request: HttpRequest, collection_id: int):
+    return render(request, 'collection_detail.html', {'collection_id': collection_id})

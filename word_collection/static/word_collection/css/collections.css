@@ -126,3 +126,60 @@
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* --- Collection detail page header --- */
+
+.collection-hero {
+    position: relative;
+    padding: 56px 24px 28px;
+    border-radius: var(--radius-l);
+    color: var(--text);
+    background: linear-gradient(135deg, var(--lavender) 0%, var(--mint) 100%);
+    background-size: cover;
+    background-position: center;
+}
+
+.collection-hero .icon-btn {
+    position: absolute;
+    top: 16px;
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--text);
+}
+
+.collection-hero-back {
+    left: 16px;
+}
+
+.collection-hero-edit {
+    right: 16px;
+}
+
+.collection-hero h1 {
+    font-size: 26px;
+    font-weight: 800;
+}
+
+.collection-hero-description {
+    margin-top: 6px;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.collection-hero-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.collection-hero-count {
+    margin-top: 14px;
+    font-weight: 700;
+    opacity: 0.85;
+}
+
+@media (min-width: 720px) {
+    .collection-hero {
+        padding: 64px 36px 32px;
+    }
+}

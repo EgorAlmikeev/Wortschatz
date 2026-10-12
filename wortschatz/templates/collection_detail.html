@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Коллекция — Wortschatz{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'word_collection/css/home.css' %}">
+<link rel="stylesheet" href="{% static 'word_collection/css/collections.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="app-shell">
+    <nav class="side-nav">
+        <div class="brand"><span class="brand-dot"></span>Wortschatz</div>
+
+        <button class="nav-item" data-nav="home" type="button">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 11.5 12 4l9 7.5"></path>
+                    <path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"></path>
+                </svg>
+            </span>
+            Главная
+        </button>
+        <button class="nav-item is-active" data-nav="collections" type="button">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"></path>
+                </svg>
+            </span>
+            Коллекции
+        </button>
+        <button class="nav-item" data-nav="profile" type="button">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="4"></circle>
+                    <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+                </svg>
+            </span>
+            Профиль
+        </button>
+
+        <div style="flex: 1 1 auto;"></div>
+
+        <button class="nav-item" id="logout-desktop" type="button">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <path d="M16 17l5-5-5-5"></path>
+                    <path d="M21 12H9"></path>
+                </svg>
+            </span>
+            Выйти
+        </button>
+    </nav>
+
+    <main class="app-main">
+        <div class="page">
+            <header class="page-header page-header-end">
+                <button class="icon-btn" id="logout-mobile" title="Выйти" type="button">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <path d="M16 17l5-5-5-5"></path>
+                        <path d="M21 12H9"></path>
+                    </svg>
+                </button>
+            </header>
+
+            <div class="collection-hero" id="collection-hero" data-collection-id="{{ collection_id }}">
+                <button class="icon-btn collection-hero-back" id="hero-back" title="Назад" type="button">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5"></path>
+                        <path d="m12 19-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <button class="icon-btn collection-hero-edit" id="hero-edit" title="Редактировать" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+                    </svg>
+                </button>
+                <h1 id="hero-title"></h1>
+                <p class="collection-hero-description" id="hero-description" hidden></p>
+                <div class="collection-hero-tags" id="hero-tags"></div>
+                <p class="collection-hero-count" id="hero-count"></p>
+            </div>
+
+            <div class="search-bar">
+                <div class="input-search-wrap">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                    </svg>
+                    <input type="text" id="search-input" placeholder="Поиск слов…" autocomplete="off">
+                </div>
+                <button class="icon-btn" id="filter-toggle" title="Фильтры" type="button">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 6h16"></path>
+                        <path d="M7 12h10"></path>
+                        <path d="M10 18h4"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="filter-panel card" id="filter-panel" hidden>
+                <div class="filter-row">
+                    <div class="field">
+                        <label for="filter-part-of-speech">Часть речи</label>
+                        <select class="input" id="filter-part-of-speech">
+                            <option value="">Любая</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="filter-date-from">Добавлено с</label>
+                        <input class="input" type="date" id="filter-date-from">
+                    </div>
+                    <div class="field">
+                        <label for="filter-date-to">Добавлено по</label>
+                        <input class="input" type="date" id="filter-date-to">
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn btn-ghost" id="filter-reset" type="button">Сбросить</button>
+                    <button class="btn btn-mint" id="filter-apply" type="button">Применить</button>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <button class="btn btn-peach quick-action" id="game-btn" type="button">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"></path>
+                    </svg>
+                    Игра
+                </button>
+                <button class="btn btn-lavender quick-action" id="test-btn" type="button">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"></path>
+                    </svg>
+                    Тест
+                </button>
+            </div>
+
+            <p class="results-count" id="results-count">Загрузка…</p>
+
+            <div class="word-grid" id="word-grid"></div>
+
+            <div class="empty-state" id="empty-state" hidden>
+                <h3>В этой коллекции пока нет слов</h3>
+                <p>Измените параметры поиска или добавьте слова в коллекцию.</p>
+            </div>
+
+            <div class="pagination" id="pagination" hidden>
+                <button class="icon-btn" id="prev-page" title="Назад" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m15 18-6-6 6-6"></path>
+                    </svg>
+                </button>
+                <span id="page-indicator">Страница 1</span>
+                <button class="icon-btn" id="next-page" title="Вперёд" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m9 18 6-6 6-6"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<button class="fab" id="add-word-fab" title="Добавить слово" type="button">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14"></path>
+        <path d="M5 12h14"></path>
+    </svg>
+</button>
+
+<ul class="bottom-nav">
+    <li>
+        <button class="nav-item" data-nav="home" type="button">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 11.5 12 4l9 7.5"></path>
+                    <path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"></path>
+                </svg>
+            </span>
+            Главная
+        </button>
+    </li>
+    <li>
+        <button class="nav-item is-active" data-nav="collections" type="button">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"></path>
+                </svg>
+            </span>
+            Коллекции
+        </button>
+    </li>
+    <li>
+        <button class="nav-item" data-nav="profile" type="button">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="4"></circle>
+                    <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+                </svg>
+            </span>
+            Профиль
+        </button>
+    </li>
+</ul>
+
+<template id="word-card-template">
+    <article class="card word-card">
+        <div class="word-title">
+            <span class="word-genus" hidden></span>
+            <h3 class="word-definition"></h3>
+        </div>
+        <div class="word-translations"></div>
+        <p class="word-meta">
+            <span class="word-pos"></span><span class="word-dot">·</span><span class="word-date"></span>
+        </p>
+    </article>
+</template>
+
+<div class="modal-overlay" id="word-modal-overlay" hidden>
+    <div class="modal-dialog" id="word-modal" role="dialog" aria-modal="true" aria-labelledby="modal-definition">
+        <div class="detail-hero">
+            <button class="icon-btn modal-back" id="modal-back" title="Назад" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5"></path>
+                    <path d="m12 19-7-7 7-7"></path>
+                </svg>
+            </button>
+            <button class="icon-btn modal-close" id="modal-close" title="Закрыть" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+            <button class="icon-btn modal-edit" id="modal-edit" title="Редактировать" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+                </svg>
+            </button>
+            <div>
+                <span class="detail-hero-genus" id="modal-genus" hidden></span>
+                <h2 id="modal-definition"></h2>
+            </div>
+            <p class="detail-hero-subtitle" id="modal-pos"></p>
+        </div>
+        <div class="detail-body">
+            <div class="detail-loading" id="modal-loading">Загрузка…</div>
+            <div class="detail-sections" id="modal-sections" hidden></div>
+            <div class="detail-empty" id="modal-empty" hidden>Для этого слова пока нет дополнительных данных.</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'word_collection/js/word-list.js' %}"></script>
+<script src="{% static 'word_collection/js/collection_detail.js' %}"></script>
+{% endblock %}

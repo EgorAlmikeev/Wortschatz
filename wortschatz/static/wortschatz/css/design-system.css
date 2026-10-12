@@ -383,6 +383,26 @@ ul {
     transform: translateY(16px);
     transition: transform 0.2s ease;
     position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(39, 34, 64, 0.22) transparent;
+}
+
+.modal-dialog::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-dialog::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modal-dialog::-webkit-scrollbar-thumb {
+    background: rgba(39, 34, 64, 0.22);
+    border-radius: var(--radius-pill);
+    border: 2px solid var(--surface);
+}
+
+.modal-dialog::-webkit-scrollbar-thumb:hover {
+    background: rgba(39, 34, 64, 0.4);
 }
 
 .modal-overlay.is-open .modal-dialog {
@@ -427,6 +447,10 @@ ul {
 
 .page-header .icon-btn {
     display: inline-flex;
+}
+
+.page-header-end {
+    justify-content: flex-end;
 }
 
 .filter-panel {
@@ -499,6 +523,249 @@ ul {
 
     .page-header .icon-btn {
         display: none;
+    }
+}
+
+/* --- Detail modal hero + sections (shared by word/collection detail dialogs) --- */
+
+.detail-hero {
+    position: relative;
+    padding: 56px 24px 28px;
+    background: linear-gradient(135deg, var(--lavender) 0%, var(--mint) 100%);
+    color: var(--text);
+    border-radius: var(--radius-l) var(--radius-l) 0 0;
+}
+
+.detail-hero .icon-btn {
+    position: absolute;
+    top: 16px;
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--text);
+}
+
+.detail-hero .modal-back,
+.detail-hero .modal-close {
+    left: 16px;
+}
+
+.detail-hero .modal-edit {
+    right: 16px;
+    left: auto;
+}
+
+.detail-hero .modal-back {
+    display: inline-flex;
+}
+
+.detail-hero .modal-close {
+    display: none;
+}
+
+.detail-hero .modal-back.force-visible {
+    display: inline-flex !important;
+}
+
+.detail-hero-genus {
+    font-weight: 700;
+    opacity: 0.75;
+    margin-right: 6px;
+}
+
+.detail-hero h2 {
+    display: inline-flex;
+    font-size: 26px;
+    font-weight: 800;
+}
+
+.detail-hero-subtitle {
+    margin-top: 4px;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.detail-body {
+    padding: 24px;
+}
+
+.detail-loading {
+    padding: 40px 0;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.detail-empty {
+    padding: 24px 0;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.detail-sections {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-section {
+    padding: 20px 0;
+    border-top: 1px solid var(--border);
+}
+
+.detail-section:first-child {
+    border-top: none;
+    padding-top: 0;
+}
+
+.detail-section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.section-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+}
+
+.section-icon.mint {
+    background: var(--mint);
+    color: var(--mint-text);
+}
+
+.section-icon.peach {
+    background: var(--peach);
+    color: var(--peach-text);
+}
+
+.section-icon.lavender {
+    background: var(--lavender);
+    color: var(--lavender-text);
+}
+
+.section-icon.rose {
+    background: var(--rose);
+    color: var(--rose-text);
+}
+
+.detail-section-head h3 {
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.translation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.translation-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.translation-list li::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--mint-strong);
+    flex: 0 0 auto;
+}
+
+.example-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.example-sentence {
+    font-weight: 600;
+}
+
+.example-translation {
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.form-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.form-row .form-name {
+    color: var(--text-muted);
+}
+
+.form-row .form-value {
+    font-weight: 700;
+}
+
+.preposition-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.preposition-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.preposition-example {
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.preposition-translation {
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+@media (min-width: 720px) {
+    .detail-hero {
+        padding: 64px 36px 32px;
+    }
+
+    .detail-body {
+        padding: 32px 36px;
+    }
+
+    .detail-hero .modal-back {
+        display: none;
+    }
+
+    .detail-hero .modal-close {
+        display: inline-flex;
+    }
+
+    .detail-sections {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 32px;
+    }
+
+    .detail-section {
+        border-top: none;
+        padding: 0 0 24px;
+    }
+
+    .detail-section:nth-child(n+3) {
+        border-top: 1px solid var(--border);
+        padding-top: 24px;
     }
 }
 

@@ -69,11 +69,14 @@
 
         card.tabIndex = 0;
         card.setAttribute("role", "button");
-        card.addEventListener("click", comingSoon);
+        const openCollection = () => {
+            window.location.href = `/collections/${collection.id}/`;
+        };
+        card.addEventListener("click", openCollection);
         card.addEventListener("keydown", (event) => {
             if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
-                comingSoon();
+                openCollection();
             }
         });
 
