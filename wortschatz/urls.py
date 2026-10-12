@@ -21,7 +21,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 import word_collection.urls
 import my_jwt_auth.views
 import my_jwt_auth.urls
-from .views import home, collections, collection_detail
+from .views import home, collections, collection_detail, profile
 
 urlpatterns = [
     # Home page
@@ -30,6 +30,8 @@ urlpatterns = [
     path('collections/', collections, name='collections_page'),
     # Collection detail page
     path('collections/<int:collection_id>/', collection_detail, name='collection_detail_page'),
+    # Profile page
+    path('profile/', profile, name='profile_page'),
     # Admin page
     path('admin/', admin.site.urls),
     # OpenAPI schema

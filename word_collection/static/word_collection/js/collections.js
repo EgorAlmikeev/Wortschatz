@@ -173,11 +173,10 @@
     });
 
     document.querySelectorAll('[data-nav="profile"]').forEach((btn) => {
-        btn.addEventListener("click", comingSoon);
+        btn.addEventListener("click", () => {
+            window.location.href = "/profile/";
+        });
     });
-
-    document.getElementById("logout-desktop").addEventListener("click", () => Auth.logout());
-    document.getElementById("logout-mobile").addEventListener("click", () => Auth.logout());
 
     loadCategoryChips();
     loadCollections();

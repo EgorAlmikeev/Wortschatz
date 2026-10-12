@@ -365,13 +365,10 @@ const WordList = (function () {
         });
 
         document.querySelectorAll('[data-nav="profile"]').forEach((btn) => {
-            btn.addEventListener("click", comingSoon);
+            btn.addEventListener("click", () => {
+                window.location.href = "/profile/";
+            });
         });
-
-        const logoutDesktop = document.getElementById("logout-desktop");
-        if (logoutDesktop) logoutDesktop.addEventListener("click", () => Auth.logout());
-        const logoutMobile = document.getElementById("logout-mobile");
-        if (logoutMobile) logoutMobile.addEventListener("click", () => Auth.logout());
 
         initPartOfSpeechOptions();
         loadWords();

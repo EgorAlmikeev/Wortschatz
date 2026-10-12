@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Профиль — Wortschatz{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'my_jwt_auth/css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="app-shell">
+    <nav class="side-nav">
+        <div class="brand"><span class="brand-dot"></span>Wortschatz</div>
+
+        <button class="nav-item" data-nav="home" type="button">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 11.5 12 4l9 7.5"></path>
+                    <path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"></path>
+                </svg>
+            </span>
+            Главная
+        </button>
+        <button class="nav-item" data-nav="collections" type="button">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"></path>
+                </svg>
+            </span>
+            Коллекции
+        </button>
+        <button class="nav-item is-active" data-nav="profile" type="button">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="4"></circle>
+                    <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+                </svg>
+            </span>
+            Профиль
+        </button>
+
+        <div style="flex: 1 1 auto;"></div>
+    </nav>
+
+    <main class="app-main">
+        <div class="page profile-page">
+            <header class="page-header">
+                <h1>Профиль</h1>
+            </header>
+
+            <div class="profile-content">
+                <div class="card profile-account-card">
+                    <div class="avatar">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 id="profile-username"></h2>
+                        <p class="profile-meta" id="profile-joined"></p>
+                    </div>
+                </div>
+
+                <div class="card profile-section">
+                    <h3>Сменить пароль</h3>
+                    <div class="auth-error" id="password-message"></div>
+                    <form id="change-password-form" novalidate>
+                        <div class="field">
+                            <label for="old-password">Текущий пароль</label>
+                            <input class="input" type="password" id="old-password" placeholder="Введите текущий пароль"
+                                autocomplete="current-password" required>
+                        </div>
+                        <div class="field">
+                            <label for="new-password">Новый пароль</label>
+                            <input class="input" type="password" id="new-password" placeholder="Введите новый пароль"
+                                autocomplete="new-password" required>
+                        </div>
+                        <div class="field">
+                            <label for="new-password2">Повторите новый пароль</label>
+                            <input class="input" type="password" id="new-password2" placeholder="Повторите новый пароль"
+                                autocomplete="new-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-mint" id="change-password-submit">Сохранить пароль</button>
+                    </form>
+                </div>
+
+                <div class="card profile-section">
+                    <h3>Выход и удаление аккаунта</h3>
+
+                    <div class="profile-section-actions">
+                        <button class="btn btn-surface btn-block" id="logout-btn" type="button">Выйти</button>
+                        <div id="delete-account-prompt">
+                            <button class="btn btn-danger btn-block" id="delete-account-btn" type="button">Удалить аккаунт</button>
+                        </div>
+                    </div>
+                    <div id="delete-account-confirm" hidden>
+                        <p class="profile-danger-text">Это действие необратимо. Все ваши слова и коллекции будут удалены
+                            навсегда.</p>
+                        <div class="profile-confirm-actions">
+                            <button class="btn btn-ghost" id="delete-account-cancel" type="button">Отмена</button>
+                            <button class="btn btn-danger" id="delete-account-confirm-btn" type="button">Да, удалить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<ul class="bottom-nav">
+    <li>
+        <button class="nav-item" data-nav="home" type="button">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 11.5 12 4l9 7.5"></path>
+                    <path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"></path>
+                </svg>
+            </span>
+            Главная
+        </button>
+    </li>
+    <li>
+        <button class="nav-item" data-nav="collections" type="button">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"></path>
+                </svg>
+            </span>
+            Коллекции
+        </button>
+    </li>
+    <li>
+        <button class="nav-item is-active" data-nav="profile" type="button">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="4"></circle>
+                    <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+                </svg>
+            </span>
+            Профиль
+        </button>
+    </li>
+</ul>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'my_jwt_auth/js/profile.js' %}"></script>
+{% endblock %}

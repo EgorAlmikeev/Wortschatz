@@ -3,6 +3,7 @@ from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 
 from my_jwt_auth.mockups import Mockups as JWTMockups
+from tests.word_collection.mockups import Mockups as WordCollectionMocups
 from word_collection.models import Collection, Word
 
 class TestJWTAuth:
@@ -126,3 +127,80 @@ class TestRegistration:
             assert word.examples.exists()
             assert word.forms.exists()
             assert word.prepositions_and_cases_with_translations.exists()
+
+
+class TestProfile:
+    def setup_method(self, method):
+        print()
+        print(f"=== creating user for a '{method.__name__}' test ===")
+        self.user = User.objects.create_user(username=JWTMockups.user['username'], password=JWTMockups.user['password'])
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    @pytest.mark.django_db
+    def test_get_profile_requires_auth(self):
+        client = APIClient()
+
+        response = client.get('/api/auth/me/')
+
+        assert response.status_code == 401
+
+    @pytest.mark.django_db
+    def test_get_profile(self):
+        response = self.client.get('/api/auth/me/')
+
+        assert response.status_code == 200
+        assert response.data['username'] == self.user.username
+        assert 'date_joined' in response.data
+        assert 'password' not in response.data
+
+    @pytest.mark.django_db
+    def test_change_password(self):
+        data = {'old_password': JWTMockups.user['password'], 'new_password': 'a-strong-passw0rd'}
+
+        response = self.client.post('/api/auth/change-password/', data, format='json')
+
+        assert response.status_code == 204
+        self.user.refresh_from_db()
+        assert self.user.check_password('a-strong-passw0rd')
+
+    @pytest.mark.django_db
+    def test_change_password_wrong_old_password(self):
+        data = {'old_password': 'not-the-right-password', 'new_password': 'a-strong-passw0rd'}
+
+        response = self.client.post('/api/auth/change-password/', data, format='json')
+
+        assert response.status_code == 400
+        self.user.refresh_from_db()
+        assert self.user.check_password(JWTMockups.user['password'])
+
+    @pytest.mark.django_db
+    def test_change_password_weak_new_password(self):
+        data = {'old_password': JWTMockups.user['password'], 'new_password': '12345'}
+
+        response = self.client.post('/api/auth/change-password/', data, format='json')
+
+        assert response.status_code == 400
+        self.user.refresh_from_db()
+        assert self.user.check_password(JWTMockups.user['password'])
+
+    @pytest.mark.django_db
+    def test_delete_account(self):
+        WordCollectionMocups.create_word(self.user)
+        WordCollectionMocups.create_collection(self.user)
+
+        response = self.client.delete('/api/auth/me/')
+
+        assert response.status_code == 204
+        assert not User.objects.filter(id=self.user.id).exists()
+        assert not Word.objects.filter(owner_id=self.user.id).exists()
+        assert not Collection.objects.filter(owner_id=self.user.id).exists()
+
+    @pytest.mark.django_db
+    def test_delete_account_requires_auth(self):
+        client = APIClient()
+
+        response = client.delete('/api/auth/me/')
+
+        assert response.status_code == 401
+        assert User.objects.filter(id=self.user.id).exists()

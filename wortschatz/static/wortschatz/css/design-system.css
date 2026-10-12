@@ -146,6 +146,25 @@ ul {
     color: var(--text);
 }
 
+.btn-danger {
+    background: var(--danger-soft);
+    color: var(--danger);
+}
+
+.btn-danger:hover {
+    background: var(--danger);
+    color: #fff;
+}
+
+.btn-surface {
+    background: var(--surface-soft);
+    color: var(--text);
+}
+
+.btn-surface:hover {
+    background: var(--border);
+}
+
 .btn[disabled],
 .btn.is-disabled {
     opacity: 0.55;
@@ -210,6 +229,29 @@ ul {
 .input:focus {
     border-color: var(--lavender-strong);
     background: var(--surface);
+}
+
+/* --- Inline form feedback (used by auth forms + the profile page) --- */
+
+.auth-error {
+    width: 100%;
+    background: var(--danger-soft);
+    color: var(--danger);
+    border-radius: var(--radius-m);
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    display: none;
+}
+
+.auth-error.is-visible {
+    display: block;
+}
+
+.auth-error.is-success {
+    background: var(--mint);
+    color: var(--mint-text);
 }
 
 .search-bar {
@@ -445,14 +487,6 @@ ul {
     font-weight: 800;
 }
 
-.page-header .icon-btn {
-    display: inline-flex;
-}
-
-.page-header-end {
-    justify-content: flex-end;
-}
-
 .filter-panel {
     padding: 18px;
     display: flex;
@@ -519,10 +553,6 @@ ul {
     .page {
         max-width: 1040px;
         padding: 40px 48px 48px;
-    }
-
-    .page-header .icon-btn {
-        display: none;
     }
 }
 

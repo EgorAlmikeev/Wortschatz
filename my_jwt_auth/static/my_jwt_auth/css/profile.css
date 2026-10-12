@@ -1,0 +1,75 @@
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.profile-account-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 24px;
+}
+
+.profile-account-card h2 {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.profile-meta {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+.profile-section {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.profile-section h3 {
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.profile-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.profile-danger-text {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.profile-confirm-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.profile-confirm-actions .btn {
+    flex: 1 1 0;
+}
+
+.profile-section-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+@media (min-width: 900px) {
+    .page.profile-page {
+        max-width: 620px;
+    }
+
+    .profile-section-actions {
+        flex-direction: row;
+    }
+
+    .profile-section-actions > * {
+        flex: 1 1 0;
+    }
+}
