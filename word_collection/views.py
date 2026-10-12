@@ -19,7 +19,7 @@ from .serializers import (
     WordPrepositionAndCaseWithTranslationSerializer,
 )
 from .permissions import IsOwnerOrReadOnly
-from .filters import WordFilter
+from .filters import WordFilter, CollectionFilter
 
 
 class WordPagination(PageNumberPagination):
@@ -142,6 +142,8 @@ class TagViewSet(viewsets.ModelViewSet):
 class CollectionViewSet(viewsets.ModelViewSet):
     serializer_class = CollectionSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = CollectionFilter
 
     def get_queryset(self):
         if getattr(self, "swagger_fake_view", False):

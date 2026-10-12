@@ -468,7 +468,13 @@
     els.testBtn.addEventListener("click", comingSoon);
     els.fab.addEventListener("click", comingSoon);
 
-    document.querySelectorAll('[data-nav="collections"], [data-nav="profile"]').forEach((btn) => {
+    document.querySelectorAll('[data-nav="collections"]').forEach((btn) => {
+        btn.addEventListener("click", () => {
+            window.location.href = "/collections/";
+        });
+    });
+
+    document.querySelectorAll('[data-nav="profile"]').forEach((btn) => {
         btn.addEventListener("click", comingSoon);
     });
 

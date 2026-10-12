@@ -5,3 +5,7 @@ from django.contrib.auth.models import User
 
 def home(request: HttpRequest):
     return render(request, 'home.html')
+
+
+def collections(request: HttpRequest):
+    return render(request, 'collections.html')

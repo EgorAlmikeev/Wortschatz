@@ -21,11 +21,13 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 import word_collection.urls
 import my_jwt_auth.views
 import my_jwt_auth.urls
-from .views import home
+from .views import home, collections
 
 urlpatterns = [
     # Home page
     path('', home, name = 'home'),
+    # Collections page
+    path('collections/', collections, name='collections_page'),
     # Admin page
     path('admin/', admin.site.urls),
     # OpenAPI schema

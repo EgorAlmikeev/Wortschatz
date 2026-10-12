@@ -3,6 +3,7 @@ from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 
 from tests.word_collection.mockups import Mockups as WordCollectionMocups
+from tests.word_collection.factories import TagFactory
 from my_jwt_auth.mockups import Mockups as JWTMockups
 
 
@@ -84,3 +85,24 @@ class TestCollectionModel:
         response = self.client.get(f"/api/words/{word.id}/")
         assert response.status_code == 200
         assert all(collection_id != collection.id for collection_id in response.data["collections"])
+
+    @pytest.mark.django_db
+    def test_filter_collections_by_tag_id(self):
+        tag_a = TagFactory.create(owner=self.user)
+        tag_b = TagFactory.create(owner=self.user)
+        collection_a, _ = WordCollectionMocups.create_collection(self.user)
+        collection_b, _ = WordCollectionMocups.create_collection(self.user)
+        collection_c, _ = WordCollectionMocups.create_collection(self.user)
+        collection_a.tags.add(tag_a)
+        collection_b.tags.add(tag_b)
+
+        response = self.client.get(f"/api/collections/?tag_id={tag_a.id}")
+        assert response.status_code == 200
+        returned_ids = {c["id"] for c in response.data}
+        assert returned_ids == {collection_a.id}
+
+        response = self.client.get(f"/api/collections/?tag_id={tag_a.id},{tag_b.id}")
+        assert response.status_code == 200
+        returned_ids = {c["id"] for c in response.data}
+        assert returned_ids == {collection_a.id, collection_b.id}
+        assert collection_c.id not in returned_ids
