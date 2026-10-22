@@ -9,6 +9,7 @@
  */
 const AddWord = (function () {
     const NOUN_ID = 1;
+    const VERB_ID = 2;
 
     const GENUS_OPTIONS = [
         [1, "Мужской (der)"],
@@ -46,6 +47,7 @@ const AddWord = (function () {
             translationsList: document.getElementById("add-word-translations"),
             examplesList: document.getElementById("add-word-examples"),
             formsList: document.getElementById("add-word-forms"),
+            prepositionsSection: document.getElementById("add-word-prepositions-section"),
             prepositionsList: document.getElementById("add-word-prepositions"),
             addTranslationBtn: document.getElementById("add-translation-btn"),
             addExampleBtn: document.getElementById("add-example-btn"),
@@ -69,6 +71,7 @@ const AddWord = (function () {
 
         els.pos.addEventListener("change", () => {
             els.genusField.hidden = els.pos.value !== String(NOUN_ID);
+            els.prepositionsSection.hidden = els.pos.value !== String(VERB_ID);
         });
 
         els.back.addEventListener("click", close);
@@ -179,6 +182,7 @@ const AddWord = (function () {
         els.pos.value = "";
         els.genus.value = "";
         els.genusField.hidden = true;
+        els.prepositionsSection.hidden = true;
         els.translationsList.innerHTML = "";
         els.examplesList.innerHTML = "";
         els.formsList.innerHTML = "";
@@ -233,19 +237,18 @@ const AddWord = (function () {
             (e) => e.sentence && e.translation
         );
         const forms = collectRows(els.formsList, ["name", "form"]).filter((f) => f.name && f.form);
-        const prepositions = collectRows(els.prepositionsList, [
-            "preposition",
-            "case",
-            "translation",
-            "example",
-        ])
-            .filter((p) => p.preposition && p.case)
-            .map((p) => ({
-                preposition: p.preposition,
-                case: p.case,
-                translation: p.translation || null,
-                example: p.example || null,
-            }));
+        // Prepositions only make sense for verbs — ignore anything left over
+        // in the (hidden) list if the user switched away from "Глагол".
+        const prepositions = els.prepositionsSection.hidden
+            ? []
+            : collectRows(els.prepositionsList, ["preposition", "case", "translation", "example"])
+                  .filter((p) => p.preposition && p.case)
+                  .map((p) => ({
+                      preposition: p.preposition,
+                      case: p.case,
+                      translation: p.translation || null,
+                      example: p.example || null,
+                  }));
 
         els.submit.disabled = true;
 
