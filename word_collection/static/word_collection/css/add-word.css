@@ -63,6 +63,13 @@
     color: var(--danger);
 }
 
+/* Shown once a text input hits its model's max_length, so it's clear why
+   further typing stops having any effect. */
+.input.input-limit-reached {
+    border-color: var(--danger);
+    background: var(--danger-soft);
+}
+
 .form-section {
     display: flex;
     flex-direction: column;

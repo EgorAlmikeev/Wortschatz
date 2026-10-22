@@ -85,7 +85,7 @@ function requireAuth() {
     return true;
 }
 
-function showToast(message, duration = 2200) {
+function showToast(message, duration = 2200, variant = "default") {
     let root = document.getElementById("toast-root");
     if (!root) {
         root = document.createElement("div");
@@ -94,7 +94,7 @@ function showToast(message, duration = 2200) {
     }
 
     const toast = document.createElement("div");
-    toast.className = "toast";
+    toast.className = variant === "warning" ? "toast toast-warning" : "toast";
     toast.textContent = message;
     root.appendChild(toast);
 

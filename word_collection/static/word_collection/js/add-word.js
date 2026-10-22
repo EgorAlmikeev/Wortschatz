@@ -10,6 +10,7 @@
 const AddWord = (function () {
     const NOUN_ID = 1;
     const VERB_ID = 2;
+    const MAX_ROWS = 10;
 
     const GENUS_OPTIONS = [
         [1, "Мужской (der)"],
@@ -55,6 +56,9 @@ const AddWord = (function () {
             addPrepositionBtn: document.getElementById("add-preposition-btn"),
         };
 
+        // Word.definition: max_length=100
+        wireLengthLimit(els.definition);
+
         for (const [id, label] of WordDetail.PART_OF_SPEECH) {
             const option = document.createElement("option");
             option.value = String(id);
@@ -95,12 +99,21 @@ const AddWord = (function () {
         els.submit.addEventListener("click", submit);
     }
 
-    function makeInput(placeholder, field) {
+    function wireLengthLimit(input) {
+        const update = () => {
+            input.classList.toggle("input-limit-reached", input.value.length >= input.maxLength);
+        };
+        input.addEventListener("input", update);
+    }
+
+    function makeInput(placeholder, field, maxLength) {
         const input = document.createElement("input");
         input.className = "input";
         input.type = "text";
         input.placeholder = placeholder;
         input.dataset.field = field;
+        input.maxLength = maxLength;
+        wireLengthLimit(input);
         return input;
     }
 
@@ -113,10 +126,22 @@ const AddWord = (function () {
         return btn;
     }
 
+    function isAtRowLimit(listEl, warningMessage) {
+        if (listEl.children.length >= MAX_ROWS) {
+            showToast(warningMessage, 2200, "warning");
+            return true;
+        }
+        return false;
+    }
+
     function addTranslationRow() {
+        if (isAtRowLimit(els.translationsList, `Можно добавить не более ${MAX_ROWS} переводов`)) {
+            return;
+        }
         const row = document.createElement("div");
         row.className = "form-repeat-row";
-        row.appendChild(makeInput("Перевод", "translation"));
+        // WordTranslation.translation: max_length=100
+        row.appendChild(makeInput("Перевод", "translation", 100));
         const removeBtn = makeRemoveButton();
         removeBtn.addEventListener("click", () => row.remove());
         row.appendChild(removeBtn);
@@ -124,21 +149,29 @@ const AddWord = (function () {
     }
 
     function addExampleRow() {
+        if (isAtRowLimit(els.examplesList, `Можно добавить не более ${MAX_ROWS} примеров`)) {
+            return;
+        }
         const card = document.createElement("div");
         card.className = "form-repeat-card";
         const removeBtn = makeRemoveButton();
         removeBtn.addEventListener("click", () => card.remove());
         card.appendChild(removeBtn);
-        card.appendChild(makeInput("Предложение", "sentence"));
-        card.appendChild(makeInput("Перевод предложения", "translation"));
+        // WordExample.sentence / .translation: max_length=200
+        card.appendChild(makeInput("Предложение", "sentence", 200));
+        card.appendChild(makeInput("Перевод предложения", "translation", 200));
         els.examplesList.appendChild(card);
     }
 
     function addFormRow() {
+        if (isAtRowLimit(els.formsList, `Можно добавить не более ${MAX_ROWS} форм слова`)) {
+            return;
+        }
         const row = document.createElement("div");
         row.className = "form-repeat-row";
-        row.appendChild(makeInput("Название формы", "name"));
-        row.appendChild(makeInput("Форма", "form"));
+        // WordForm.name / .form: max_length=100
+        row.appendChild(makeInput("Название формы", "name", 100));
+        row.appendChild(makeInput("Форма", "form", 100));
         const removeBtn = makeRemoveButton();
         removeBtn.addEventListener("click", () => row.remove());
         row.appendChild(removeBtn);
@@ -146,20 +179,25 @@ const AddWord = (function () {
     }
 
     function addPrepositionRow() {
+        if (isAtRowLimit(els.prepositionsList, `Можно добавить не более ${MAX_ROWS} предлогов с падежами`)) {
+            return;
+        }
         const card = document.createElement("div");
         card.className = "form-repeat-card";
         const removeBtn = makeRemoveButton();
         removeBtn.addEventListener("click", () => card.remove());
         card.appendChild(removeBtn);
 
+        // WordPrepositionAndCaseWithTranslation.preposition / .case / .translation: max_length=100
         const topRow = document.createElement("div");
         topRow.className = "form-inline-pair";
-        topRow.appendChild(makeInput("Предлог", "preposition"));
-        topRow.appendChild(makeInput("Падеж", "case"));
+        topRow.appendChild(makeInput("Предлог", "preposition", 100));
+        topRow.appendChild(makeInput("Падеж", "case", 100));
         card.appendChild(topRow);
 
-        card.appendChild(makeInput("Перевод (необязательно)", "translation"));
-        card.appendChild(makeInput("Пример (необязательно)", "example"));
+        card.appendChild(makeInput("Перевод (необязательно)", "translation", 100));
+        // WordPrepositionAndCaseWithTranslation.example: max_length=200
+        card.appendChild(makeInput("Пример (необязательно)", "example", 200));
         els.prepositionsList.appendChild(card);
     }
 
