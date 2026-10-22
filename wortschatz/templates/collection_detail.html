@@ -6,6 +6,7 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'word_collection/css/home.css' %}">
 <link rel="stylesheet" href="{% static 'word_collection/css/collections.css' %}">
+<link rel="stylesheet" href="{% static 'word_collection/css/add-word.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -252,9 +253,12 @@
         </div>
     </div>
 </div>
+
+{% include 'add_word_modal.html' %}
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'word_collection/js/word-list.js' %}"></script>
+<script src="{% static 'word_collection/js/add-word.js' %}"></script>
 <script src="{% static 'word_collection/js/collection_detail.js' %}"></script>
 {% endblock %}

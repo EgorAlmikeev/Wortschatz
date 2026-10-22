@@ -348,7 +348,7 @@ const WordList = (function () {
 
         els.gameBtn.addEventListener("click", comingSoon);
         els.testBtn.addEventListener("click", comingSoon);
-        els.fab.addEventListener("click", comingSoon);
+        els.fab.addEventListener("click", () => AddWord.open(() => loadWords()));
 
         document.querySelectorAll('[data-nav="home"]').forEach((btn) => {
             btn.addEventListener("click", () => {
@@ -369,6 +369,8 @@ const WordList = (function () {
                 window.location.href = "/profile/";
             });
         });
+
+        AddWord.init({ collectionId });
 
         initPartOfSpeechOptions();
         loadWords();

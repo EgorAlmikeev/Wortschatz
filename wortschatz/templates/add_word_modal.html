@@ -1,0 +1,108 @@
+{% load static %}
+<div class="modal-overlay" id="add-word-modal-overlay" hidden>
+    <div class="modal-dialog" id="add-word-modal" role="dialog" aria-modal="true" aria-labelledby="add-word-title">
+        <div class="compact-modal-header">
+            <button class="icon-btn modal-back" id="add-word-back" title="Отмена" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5"></path>
+                    <path d="m12 19-7-7 7-7"></path>
+                </svg>
+            </button>
+            <button class="icon-btn modal-close" id="add-word-close" title="Отмена" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+            <h2 id="add-word-title">Добавить слово</h2>
+            <button class="icon-btn form-submit" id="add-word-submit" title="Сохранить" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 6 9 17l-5-5"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="detail-body">
+            <div class="add-word-form">
+                <div class="auth-error" id="add-word-error"></div>
+
+                <div class="field">
+                    <label for="add-word-definition">Слово <span class="required-mark">*</span></label>
+                    <input class="input" type="text" id="add-word-definition" placeholder="Введите слово" autocomplete="off">
+                </div>
+
+                <div class="field">
+                    <label for="add-word-pos">Часть речи <span class="required-mark">*</span></label>
+                    <select class="input" id="add-word-pos">
+                        <option value="">Выберите часть речи</option>
+                    </select>
+                </div>
+
+                <div class="field" id="add-word-genus-field" hidden>
+                    <label for="add-word-genus">Род</label>
+                    <select class="input" id="add-word-genus">
+                        <option value="">Не указан</option>
+                    </select>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-head">
+                        <h3>Переводы</h3>
+                        <button class="form-add-btn mint" id="add-translation-btn" title="Добавить перевод" type="button">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 5v14"></path>
+                                <path d="M5 12h14"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="form-repeat-list" id="add-word-translations"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-head">
+                        <h3>Примеры</h3>
+                        <button class="form-add-btn peach" id="add-example-btn" title="Добавить пример" type="button">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 5v14"></path>
+                                <path d="M5 12h14"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="form-repeat-list" id="add-word-examples"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-head">
+                        <h3>Формы слова</h3>
+                        <button class="form-add-btn lavender" id="add-form-btn" title="Добавить форму" type="button">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 5v14"></path>
+                                <path d="M5 12h14"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="form-repeat-list" id="add-word-forms"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-head">
+                        <h3>Предлоги с падежами</h3>
+                        <button class="form-add-btn rose" id="add-preposition-btn" title="Добавить предлог" type="button">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 5v14"></path>
+                                <path d="M5 12h14"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="form-repeat-list" id="add-word-prepositions"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
