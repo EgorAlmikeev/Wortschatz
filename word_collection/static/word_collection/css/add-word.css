@@ -1,6 +1,9 @@
 /* --- Compact form header (back/close + title + submit checkmark) --- */
 
 .compact-modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: space-between;
