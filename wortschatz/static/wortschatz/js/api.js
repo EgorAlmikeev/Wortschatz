@@ -148,6 +148,70 @@ function confirmDialog(options) {
 }
 
 /**
+ * Small centered dialog with a single labeled text input, layered above any
+ * open modal. Resolves to the trimmed input value on submit, or null if
+ * cancelled (overlay click or Escape). The submit button stays disabled
+ * while the input is empty.
+ */
+function promptDialog(options) {
+    options = options || {};
+    return new Promise((resolve) => {
+        const overlay = document.createElement("div");
+        overlay.className = "confirm-overlay";
+        overlay.innerHTML = `
+            <div class="confirm-dialog" role="dialog" aria-modal="true">
+                <h3 class="prompt-title"></h3>
+                <div class="field">
+                    <label class="prompt-label"></label>
+                    <input class="input prompt-input" type="text" autocomplete="off">
+                </div>
+                <button type="button" class="btn btn-mint btn-block prompt-submit" disabled></button>
+            </div>
+        `;
+        overlay.querySelector(".prompt-title").textContent = options.title || "";
+        overlay.querySelector(".prompt-label").textContent = options.label || "";
+        const input = overlay.querySelector(".prompt-input");
+        input.placeholder = options.placeholder || "";
+        if (options.maxLength) {
+            input.maxLength = options.maxLength;
+        }
+        const submitBtn = overlay.querySelector(".prompt-submit");
+        submitBtn.textContent = options.submitText || "Создать";
+
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => {
+            overlay.classList.add("is-open");
+            input.focus();
+        });
+
+        function finish(result) {
+            overlay.classList.remove("is-open");
+            setTimeout(() => overlay.remove(), 200);
+            resolve(result);
+        }
+
+        input.addEventListener("input", () => {
+            submitBtn.disabled = input.value.trim().length === 0;
+        });
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && !submitBtn.disabled) {
+                finish(input.value.trim());
+            } else if (event.key === "Escape") {
+                finish(null);
+            }
+        });
+        submitBtn.addEventListener("click", () => {
+            if (!submitBtn.disabled) {
+                finish(input.value.trim());
+            }
+        });
+        overlay.addEventListener("click", (event) => {
+            if (event.target === overlay) finish(null);
+        });
+    });
+}
+
+/**
  * Russian plural selection. forms = [one, few, many], e.g. ["слово", "слова", "слов"].
  */
 function pluralizeRu(n, forms) {

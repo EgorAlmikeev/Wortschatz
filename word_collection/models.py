@@ -23,7 +23,7 @@ class Collection(OwnedModelMixin, models.Model):
 
 class Tag(OwnedModelMixin, models.Model):
     # Name of the tag
-    name = models.TextField(max_length=100)
+    name = models.TextField(max_length=50)
 
     def __str__(self):
         return self.name

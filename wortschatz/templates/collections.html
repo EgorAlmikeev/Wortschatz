@@ -5,6 +5,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'word_collection/css/collections.css' %}">
+<link rel="stylesheet" href="{% static 'word_collection/css/add-collection.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -153,8 +154,11 @@
         </div>
     </article>
 </template>
+
+{% include 'add_collection_modal.html' %}
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'word_collection/js/add-collection.js' %}"></script>
 <script src="{% static 'word_collection/js/collections.js' %}"></script>
 {% endblock %}

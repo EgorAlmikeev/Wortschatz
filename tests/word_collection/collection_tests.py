@@ -87,6 +87,39 @@ class TestCollectionModel:
         assert all(collection_id != collection.id for collection_id in response.data["collections"])
 
     @pytest.mark.django_db
+    def test_collection_add_tag(self):
+        collection, _ = WordCollectionMocups.create_collection(self.user)
+        tag = TagFactory.create(owner=self.user)
+
+        assert all(t.id != tag.id for t in collection.tags.all())
+
+        response = self.client.post(
+            f"/api/collections/{collection.id}/add_tag/", {"tag_id": tag.id}, format="json"
+        )
+        assert response.status_code == 204
+
+        response = self.client.get(f"/api/collections/{collection.id}/")
+        assert response.status_code == 200
+        assert any(t["id"] == tag.id for t in response.data["tags"])
+
+    @pytest.mark.django_db
+    def test_collection_remove_tag(self):
+        collection, _ = WordCollectionMocups.create_collection(self.user)
+        tag = TagFactory.create(owner=self.user)
+
+        collection.tags.add(tag)
+        assert any(t.id == tag.id for t in collection.tags.all())
+
+        response = self.client.delete(
+            f"/api/collections/{collection.id}/remove_tag/", {"tag_id": tag.id}, format="json"
+        )
+        assert response.status_code == 204
+
+        response = self.client.get(f"/api/collections/{collection.id}/")
+        assert response.status_code == 200
+        assert all(t["id"] != tag.id for t in response.data["tags"])
+
+    @pytest.mark.django_db
     def test_filter_collections_by_tag_id(self):
         tag_a = TagFactory.create(owner=self.user)
         tag_b = TagFactory.create(owner=self.user)

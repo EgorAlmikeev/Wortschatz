@@ -180,3 +180,29 @@ class CollectionViewSet(viewsets.ModelViewSet):
         collection.words.remove(word)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=["post"])
+    def add_tag(self, request, pk=None):
+        collection = self.get_object()
+        tag = get_object_or_404(
+            Tag,
+            pk=request.data["tag_id"],
+            owner=request.user,
+        )
+
+        collection.tags.add(tag)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=["delete"])
+    def remove_tag(self, request, pk=None):
+        collection = self.get_object()
+        tag = get_object_or_404(
+            Tag,
+            pk=request.data["tag_id"],
+            owner=request.user,
+        )
+
+        collection.tags.remove(tag)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

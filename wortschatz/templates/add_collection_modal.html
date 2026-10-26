@@ -1,0 +1,76 @@
+{% load static %}
+<div class="modal-overlay" id="add-collection-modal-overlay" hidden>
+    <div class="modal-dialog" id="add-collection-modal" role="dialog" aria-modal="true" aria-labelledby="add-collection-title">
+        <div class="compact-modal-header">
+            <button class="icon-btn modal-back" id="add-collection-back" title="Отмена" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5"></path>
+                    <path d="m12 19-7-7 7-7"></path>
+                </svg>
+            </button>
+            <button class="icon-btn modal-close" id="add-collection-close" title="Отмена" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+            <h2 id="add-collection-title">Добавить коллекцию</h2>
+            <button class="icon-btn form-submit" id="add-collection-submit" title="Сохранить" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 6 9 17l-5-5"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="detail-body">
+            <div class="add-collection-form">
+                <div class="auth-error" id="add-collection-error"></div>
+
+                <input class="input" type="text" id="add-collection-name" placeholder="Название коллекции"
+                    autocomplete="off" maxlength="100">
+
+                <textarea class="input" id="add-collection-description" placeholder="Описание коллекции" rows="3"
+                    maxlength="200"></textarea>
+
+                <div class="form-section">
+                    <div class="form-section-head">
+                        <h3>Категории</h3>
+                        <button class="form-add-btn mint" id="add-collection-tags-toggle" title="Категории" type="button">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 5v14"></path>
+                                <path d="M5 12h14"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="tag-pills" id="add-collection-selected-tags"></div>
+                    <div class="card tag-picker" id="add-collection-tags-panel" hidden>
+                        <div class="search-bar">
+                            <div class="input-search-wrap">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="7"></circle>
+                                    <path d="m21 21-4.3-4.3"></path>
+                                </svg>
+                                <input type="text" id="add-collection-tag-search" placeholder="Поиск категории"
+                                    autocomplete="off" maxlength="50">
+                            </div>
+                        </div>
+                        <button class="tag-picker-create" id="add-collection-create-tag" type="button">Создать новую категорию</button>
+                        <div class="tag-picker-list" id="add-collection-tag-list"></div>
+                        <p class="tag-picker-empty" id="add-collection-tags-empty" hidden>Категории не найдены</p>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-head">
+                        <h3>Цвет фона</h3>
+                    </div>
+                    <div class="color-swatches" id="add-collection-colors"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

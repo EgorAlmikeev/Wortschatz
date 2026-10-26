@@ -1,127 +1,9 @@
-/* --- Compact form header (back/close + title + submit checkmark) --- */
-
-.compact-modal-header {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 18px 20px;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    border-radius: var(--radius-l) var(--radius-l) 0 0;
-}
-
-.compact-modal-header h2 {
-    font-size: 17px;
-    font-weight: 800;
-}
-
-.compact-modal-header .modal-back {
-    display: inline-flex;
-}
-
-.compact-modal-header .modal-close {
-    display: none;
-}
-
-.compact-modal-header .form-submit {
-    background: var(--mint);
-    color: var(--mint-text);
-}
-
-.compact-modal-header .form-submit:hover {
-    background: var(--mint-strong);
-}
-
-.compact-modal-header .form-submit[disabled] {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-@media (min-width: 720px) {
-    .compact-modal-header .modal-back {
-        display: none;
-    }
-
-    .compact-modal-header .modal-close {
-        display: inline-flex;
-    }
-}
-
 /* --- Add-word form --- */
 
 .add-word-form {
     display: flex;
     flex-direction: column;
     gap: 22px;
-}
-
-.required-mark {
-    color: var(--danger);
-}
-
-/* Shown once a text input hits its model's max_length, so it's clear why
-   further typing stops having any effect. */
-.input.input-limit-reached {
-    border-color: var(--danger);
-    background: var(--danger-soft);
-}
-
-.form-section {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.form-section-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.form-section-head h3 {
-    font-size: 15px;
-    font-weight: 800;
-}
-
-.form-add-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex: 0 0 auto;
-    transition: filter 0.15s ease;
-}
-
-.form-add-btn:hover {
-    filter: brightness(0.95);
-}
-
-.form-add-btn.mint {
-    background: var(--mint);
-    color: var(--mint-text);
-}
-
-.form-add-btn.peach {
-    background: var(--peach);
-    color: var(--peach-text);
-}
-
-.form-add-btn.lavender {
-    background: var(--lavender);
-    color: var(--lavender-text);
-}
-
-.form-add-btn.rose {
-    background: var(--rose);
-    color: var(--rose-text);
 }
 
 .form-repeat-list {
@@ -153,26 +35,6 @@
 .form-inline-pair .input {
     flex: 1 1 0;
     min-width: 0;
-}
-
-.form-repeat-remove {
-    width: 30px;
-    height: 30px;
-    flex: 0 0 auto;
-    border: none;
-    border-radius: 50%;
-    background: var(--surface-soft);
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
-}
-
-.form-repeat-remove:hover {
-    background: var(--border);
-    color: var(--text);
 }
 
 .form-repeat-card {

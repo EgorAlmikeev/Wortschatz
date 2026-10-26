@@ -160,7 +160,12 @@
         showToast("Скоро будет доступно");
     }
 
-    els.fab.addEventListener("click", comingSoon);
+    els.fab.addEventListener("click", () => {
+        AddCollection.open(() => {
+            loadCollections();
+            loadCategoryChips();
+        });
+    });
 
     document.querySelectorAll('[data-nav="home"]').forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -174,6 +179,7 @@
         });
     });
 
+    AddCollection.init();
     loadCategoryChips();
     loadCollections();
 })();
