@@ -107,6 +107,47 @@ function showToast(message, duration = 2200, variant = "default") {
 }
 
 /**
+ * Small centered Yes/No dialog, layered above any open modal. Resolves to
+ * true if the user confirmed, false if they cancelled or clicked outside.
+ */
+function confirmDialog(options) {
+    options = options || {};
+    return new Promise((resolve) => {
+        const overlay = document.createElement("div");
+        overlay.className = "confirm-overlay";
+        overlay.innerHTML = `
+            <div class="confirm-dialog" role="alertdialog" aria-modal="true">
+                <p class="confirm-message"></p>
+                <div class="confirm-actions">
+                    <button type="button" class="btn btn-surface confirm-cancel"></button>
+                    <button type="button" class="btn confirm-ok"></button>
+                </div>
+            </div>
+        `;
+        overlay.querySelector(".confirm-message").textContent = options.message || "";
+        overlay.querySelector(".confirm-cancel").textContent = options.cancelText || "Отмена";
+        const okBtn = overlay.querySelector(".confirm-ok");
+        okBtn.textContent = options.confirmText || "Да";
+        okBtn.classList.add(options.danger ? "btn-danger" : "btn-mint");
+
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => overlay.classList.add("is-open"));
+
+        function finish(result) {
+            overlay.classList.remove("is-open");
+            setTimeout(() => overlay.remove(), 200);
+            resolve(result);
+        }
+
+        overlay.querySelector(".confirm-cancel").addEventListener("click", () => finish(false));
+        okBtn.addEventListener("click", () => finish(true));
+        overlay.addEventListener("click", (event) => {
+            if (event.target === overlay) finish(false);
+        });
+    });
+}
+
+/**
  * Russian plural selection. forms = [one, few, many], e.g. ["слово", "слова", "слов"].
  */
 function pluralizeRu(n, forms) {

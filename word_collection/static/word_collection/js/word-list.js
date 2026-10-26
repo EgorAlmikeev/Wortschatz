@@ -58,6 +58,7 @@ const WordList = (function () {
 
         const cardsById = new Map();
         let currentWords = [];
+        let currentModalWord = null;
 
         function initPartOfSpeechOptions() {
             for (const [id, label] of WordDetail.PART_OF_SPEECH) {
@@ -217,6 +218,7 @@ const WordList = (function () {
             els.modalDefinition.textContent = "";
             els.modalPos.textContent = "";
             els.modalGenus.hidden = true;
+            currentModalWord = null;
 
             try {
                 const response = await apiFetch(`/api/words/${wordId}/`);
@@ -226,6 +228,7 @@ const WordList = (function () {
                     return;
                 }
                 const word = await response.json();
+                currentModalWord = word;
 
                 els.modalDefinition.textContent = word.definition;
                 const article = WordDetail.genusArticle(word.genus_id);
@@ -254,7 +257,14 @@ const WordList = (function () {
 
         els.modalBack.addEventListener("click", closeWordModal);
         els.modalClose.addEventListener("click", closeWordModal);
-        els.modalEdit.addEventListener("click", comingSoon);
+        els.modalEdit.addEventListener("click", () => {
+            if (!currentModalWord) {
+                return;
+            }
+            const wordToEdit = currentModalWord;
+            closeWordModal();
+            AddWord.openForEdit(wordToEdit, () => loadWords());
+        });
         els.modalOverlay.addEventListener("click", (event) => {
             if (event.target === els.modalOverlay) {
                 closeWordModal();

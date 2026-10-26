@@ -1,11 +1,18 @@
 /**
- * Shared "add word" modal: opened from the FAB on the home page and on a
- * collection's word list. Creates the word via POST /api/words/, then fills
- * in its translations/examples/forms/prepositions via the dedicated add_*
- * sub-resource endpoints (the only ones that actually persist nested data —
- * WordDetailSerializer's nested fields are read-only, so posting them
- * directly on /api/words/ is silently ignored). If opened with a
- * collectionId, the new word is also added to that collection.
+ * Shared "add/edit word" modal: opened from the FAB (add mode) or from the
+ * "edit" button on the word detail popup (edit mode). Add mode creates the
+ * word via POST /api/words/, then fills in its translations/examples/
+ * forms/prepositions via the dedicated add_* sub-resource endpoints (the
+ * only ones that actually persist nested data — WordDetailSerializer's
+ * nested fields are read-only, so posting them directly on /api/words/ is
+ * silently ignored). If opened with a collectionId, the new word is also
+ * added to that collection.
+ *
+ * Edit mode PATCHes only the base-word fields that actually changed, and
+ * diffs each child list (by the item's original id) against what the word
+ * had when the modal opened, issuing only the add/remove sub-resource
+ * calls needed to reconcile the two — a changed row is removed and
+ * re-added since there is no "update a single child row" endpoint.
  */
 const AddWord = (function () {
     const NOUN_ID = 1;
@@ -26,6 +33,12 @@ const AddWord = (function () {
     let onSavedCallback = null;
     let els = null;
 
+    let mode = "add"; // "add" | "edit"
+    let editingWordId = null;
+    let originalWord = null;
+    let initialSnapshot = null;
+    let closeConfirmInFlight = false;
+
     function init(options) {
         options = options || {};
         collectionId = options.collectionId || null;
@@ -37,6 +50,7 @@ const AddWord = (function () {
 
         els = {
             overlay,
+            title: document.getElementById("add-word-title"),
             back: document.getElementById("add-word-back"),
             close: document.getElementById("add-word-close"),
             submit: document.getElementById("add-word-submit"),
@@ -78,16 +92,16 @@ const AddWord = (function () {
             els.prepositionsSection.hidden = els.pos.value !== String(VERB_ID);
         });
 
-        els.back.addEventListener("click", close);
-        els.close.addEventListener("click", close);
+        els.back.addEventListener("click", requestClose);
+        els.close.addEventListener("click", requestClose);
         els.overlay.addEventListener("click", (event) => {
             if (event.target === els.overlay) {
-                close();
+                requestClose();
             }
         });
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape" && !els.overlay.hidden) {
-                close();
+                requestClose();
             }
         });
 
@@ -104,15 +118,17 @@ const AddWord = (function () {
             input.classList.toggle("input-limit-reached", input.value.length >= input.maxLength);
         };
         input.addEventListener("input", update);
+        update();
     }
 
-    function makeInput(placeholder, field, maxLength) {
+    function makeInput(placeholder, field, maxLength, value) {
         const input = document.createElement("input");
         input.className = "input";
         input.type = "text";
         input.placeholder = placeholder;
         input.dataset.field = field;
         input.maxLength = maxLength;
+        input.value = value || "";
         wireLengthLimit(input);
         return input;
     }
@@ -134,56 +150,68 @@ const AddWord = (function () {
         return false;
     }
 
-    function addTranslationRow() {
+    function addTranslationRow(prefill) {
         if (isAtRowLimit(els.translationsList, `Можно добавить не более ${MAX_ROWS} переводов`)) {
             return;
         }
         const row = document.createElement("div");
         row.className = "form-repeat-row";
+        if (prefill && prefill.id != null) {
+            row.dataset.itemId = String(prefill.id);
+        }
         // WordTranslation.translation: max_length=100
-        row.appendChild(makeInput("Перевод", "translation", 100));
+        row.appendChild(makeInput("Перевод", "translation", 100, prefill && prefill.translation));
         const removeBtn = makeRemoveButton();
         removeBtn.addEventListener("click", () => row.remove());
         row.appendChild(removeBtn);
         els.translationsList.appendChild(row);
     }
 
-    function addExampleRow() {
+    function addExampleRow(prefill) {
         if (isAtRowLimit(els.examplesList, `Можно добавить не более ${MAX_ROWS} примеров`)) {
             return;
         }
         const card = document.createElement("div");
         card.className = "form-repeat-card";
+        if (prefill && prefill.id != null) {
+            card.dataset.itemId = String(prefill.id);
+        }
         const removeBtn = makeRemoveButton();
         removeBtn.addEventListener("click", () => card.remove());
         card.appendChild(removeBtn);
         // WordExample.sentence / .translation: max_length=200
-        card.appendChild(makeInput("Предложение", "sentence", 200));
-        card.appendChild(makeInput("Перевод предложения", "translation", 200));
+        card.appendChild(makeInput("Предложение", "sentence", 200, prefill && prefill.sentence));
+        card.appendChild(makeInput("Перевод предложения", "translation", 200, prefill && prefill.translation));
         els.examplesList.appendChild(card);
     }
 
-    function addFormRow() {
+    function addFormRow(prefill) {
         if (isAtRowLimit(els.formsList, `Можно добавить не более ${MAX_ROWS} форм слова`)) {
             return;
         }
         const row = document.createElement("div");
         row.className = "form-repeat-row";
+        if (prefill && prefill.id != null) {
+            row.dataset.itemId = String(prefill.id);
+        }
         // WordForm.name / .form: max_length=100
-        row.appendChild(makeInput("Название формы", "name", 100));
-        row.appendChild(makeInput("Форма", "form", 100));
+        row.appendChild(makeInput("Название формы", "name", 100, prefill && prefill.name));
+        row.appendChild(makeInput("Форма", "form", 100, prefill && prefill.form));
         const removeBtn = makeRemoveButton();
         removeBtn.addEventListener("click", () => row.remove());
         row.appendChild(removeBtn);
         els.formsList.appendChild(row);
     }
 
-    function addPrepositionRow() {
+    function addPrepositionRow(prefill) {
         if (isAtRowLimit(els.prepositionsList, `Можно добавить не более ${MAX_ROWS} предлогов с падежами`)) {
             return;
         }
         const card = document.createElement("div");
         card.className = "form-repeat-card";
+        if (prefill && prefill.id != null) {
+            card.dataset.itemId = String(prefill.id);
+        }
         const removeBtn = makeRemoveButton();
         removeBtn.addEventListener("click", () => card.remove());
         card.appendChild(removeBtn);
@@ -191,20 +219,20 @@ const AddWord = (function () {
         // WordPrepositionAndCaseWithTranslation.preposition / .case / .translation: max_length=100
         const topRow = document.createElement("div");
         topRow.className = "form-inline-pair";
-        topRow.appendChild(makeInput("Предлог", "preposition", 100));
-        topRow.appendChild(makeInput("Падеж", "case", 100));
+        topRow.appendChild(makeInput("Предлог", "preposition", 100, prefill && prefill.preposition));
+        topRow.appendChild(makeInput("Падеж", "case", 100, prefill && prefill.case));
         card.appendChild(topRow);
 
-        card.appendChild(makeInput("Перевод (необязательно)", "translation", 100));
+        card.appendChild(makeInput("Перевод (необязательно)", "translation", 100, prefill && prefill.translation));
         // WordPrepositionAndCaseWithTranslation.example: max_length=200
-        card.appendChild(makeInput("Пример (необязательно)", "example", 200));
+        card.appendChild(makeInput("Пример (необязательно)", "example", 200, prefill && prefill.example));
         els.prepositionsList.appendChild(card);
     }
 
     function collectRows(listEl, fieldNames) {
         const rows = [];
         listEl.querySelectorAll(".form-repeat-row, .form-repeat-card").forEach((rowEl) => {
-            const data = {};
+            const data = { id: rowEl.dataset.itemId ? Number(rowEl.dataset.itemId) : null };
             fieldNames.forEach((name) => {
                 const input = rowEl.querySelector(`[data-field="${name}"]`);
                 data[name] = input ? input.value.trim() : "";
@@ -212,6 +240,60 @@ const AddWord = (function () {
             rows.push(data);
         });
         return rows;
+    }
+
+    /**
+     * Compares the form's current rows for one child list against the rows
+     * the word originally had (matched by id) and splits the difference
+     * into rows to add and ids to remove. A row whose id still exists but
+     * whose fields changed is removed and re-added, since there's no
+     * single-row update endpoint.
+     */
+    function diffRows(currentRows, originalRows, fieldNames) {
+        const originalById = new Map(originalRows.map((row) => [row.id, row]));
+        const currentIds = new Set(currentRows.filter((row) => row.id != null).map((row) => row.id));
+
+        const toAdd = [];
+        const toRemove = [];
+
+        currentRows.forEach((row) => {
+            if (row.id != null && originalById.has(row.id)) {
+                const original = originalById.get(row.id);
+                const changed = fieldNames.some((field) => (row[field] || "") !== (original[field] || ""));
+                if (changed) {
+                    toRemove.push(row.id);
+                    toAdd.push(row);
+                }
+            } else {
+                toAdd.push(row);
+            }
+        });
+
+        originalRows.forEach((original) => {
+            if (!currentIds.has(original.id)) {
+                toRemove.push(original.id);
+            }
+        });
+
+        return { toAdd, toRemove };
+    }
+
+    function getFormSnapshot() {
+        return JSON.stringify({
+            definition: els.definition.value.trim(),
+            pos: els.pos.value,
+            genus: els.genusField.hidden ? "" : els.genus.value,
+            translations: collectRows(els.translationsList, ["translation"]),
+            examples: collectRows(els.examplesList, ["sentence", "translation"]),
+            forms: collectRows(els.formsList, ["name", "form"]),
+            prepositions: els.prepositionsSection.hidden
+                ? []
+                : collectRows(els.prepositionsList, ["preposition", "case", "translation", "example"]),
+        });
+    }
+
+    function isDirty() {
+        return initialSnapshot !== null && getFormSnapshot() !== initialSnapshot;
     }
 
     function resetForm() {
@@ -231,23 +313,86 @@ const AddWord = (function () {
         addPrepositionRow();
     }
 
+    function fillForm(word) {
+        els.error.classList.remove("is-visible");
+        els.definition.value = word.definition || "";
+        els.pos.value = word.part_of_speech_id != null ? String(word.part_of_speech_id) : "";
+        els.genus.value = word.genus_id != null ? String(word.genus_id) : "";
+        els.genusField.hidden = String(word.part_of_speech_id) !== String(NOUN_ID);
+        els.prepositionsSection.hidden = String(word.part_of_speech_id) !== String(VERB_ID);
+
+        els.translationsList.innerHTML = "";
+        els.examplesList.innerHTML = "";
+        els.formsList.innerHTML = "";
+        els.prepositionsList.innerHTML = "";
+
+        (word.translations || []).forEach((t) => addTranslationRow(t));
+        (word.examples || []).forEach((e) => addExampleRow(e));
+        (word.forms || []).forEach((f) => addFormRow(f));
+        (word.prepositions_and_cases_with_translations || []).forEach((p) => addPrepositionRow(p));
+    }
+
     function showError(message) {
         els.error.textContent = message;
         els.error.classList.add("is-visible");
+    }
+
+    function showModal() {
+        els.overlay.hidden = false;
+        document.body.style.overflow = "hidden";
+        requestAnimationFrame(() => els.overlay.classList.add("is-open"));
     }
 
     function open(onSaved) {
         if (!els) {
             return;
         }
+        mode = "add";
+        editingWordId = null;
+        originalWord = null;
         onSavedCallback = onSaved || null;
+        els.title.textContent = "Добавить слово";
         resetForm();
-        els.overlay.hidden = false;
-        document.body.style.overflow = "hidden";
-        requestAnimationFrame(() => els.overlay.classList.add("is-open"));
+        initialSnapshot = getFormSnapshot();
+        showModal();
     }
 
-    function close() {
+    function openForEdit(word, onSaved) {
+        if (!els) {
+            return;
+        }
+        mode = "edit";
+        editingWordId = word.id;
+        originalWord = word;
+        onSavedCallback = onSaved || null;
+        els.title.textContent = "Редактировать слово";
+        fillForm(word);
+        initialSnapshot = getFormSnapshot();
+        showModal();
+    }
+
+    async function requestClose() {
+        if (closeConfirmInFlight) {
+            return;
+        }
+        if (!isDirty()) {
+            hideModal();
+            return;
+        }
+        closeConfirmInFlight = true;
+        const confirmed = await confirmDialog({
+            message: "Внесённые изменения будут потеряны. Продолжить?",
+            confirmText: "Да",
+            cancelText: "Нет",
+            danger: true,
+        });
+        closeConfirmInFlight = false;
+        if (confirmed) {
+            hideModal();
+        }
+    }
+
+    function hideModal() {
         els.overlay.classList.remove("is-open");
         document.body.style.overflow = "";
         setTimeout(() => {
@@ -255,22 +400,28 @@ const AddWord = (function () {
         }, 200);
     }
 
-    async function submit() {
-        els.error.classList.remove("is-visible");
+    function postSubItem(wordId, actionName, body) {
+        return apiFetch(`/api/words/${wordId}/${actionName}/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+        });
+    }
 
+    function deleteSubItem(wordId, actionName, itemId) {
+        return apiFetch(`/api/words/${wordId}/${actionName}/`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ item_id: itemId }),
+        });
+    }
+
+    function collectFormState() {
         const definition = els.definition.value.trim();
         const partOfSpeechId = els.pos.value;
-
-        if (!definition || !partOfSpeechId) {
-            showError("Укажите слово и часть речи.");
-            return;
-        }
-
         const genusId = !els.genusField.hidden && els.genus.value ? Number(els.genus.value) : null;
 
-        const translations = collectRows(els.translationsList, ["translation"]).filter(
-            (t) => t.translation
-        );
+        const translations = collectRows(els.translationsList, ["translation"]).filter((t) => t.translation);
         const examples = collectRows(els.examplesList, ["sentence", "translation"]).filter(
             (e) => e.sentence && e.translation
         );
@@ -279,88 +430,172 @@ const AddWord = (function () {
         // in the (hidden) list if the user switched away from "Глагол".
         const prepositions = els.prepositionsSection.hidden
             ? []
-            : collectRows(els.prepositionsList, ["preposition", "case", "translation", "example"])
-                  .filter((p) => p.preposition && p.case)
-                  .map((p) => ({
-                      preposition: p.preposition,
-                      case: p.case,
-                      translation: p.translation || null,
-                      example: p.example || null,
-                  }));
+            : collectRows(els.prepositionsList, ["preposition", "case", "translation", "example"]).filter(
+                (p) => p.preposition && p.case
+            );
+
+        return { definition, partOfSpeechId, genusId, translations, examples, forms, prepositions };
+    }
+
+    async function submitCreate(state) {
+        const response = await apiFetch("/api/words/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                definition: state.definition,
+                part_of_speech_id: Number(state.partOfSpeechId),
+                genus_id: state.genusId,
+            }),
+        });
+
+        if (!response.ok) {
+            showError("Не удалось сохранить слово. Попробуйте ещё раз.");
+            return;
+        }
+
+        const word = await response.json();
+        const followUps = [];
+
+        state.translations.forEach((t) => {
+            followUps.push(postSubItem(word.id, "add_word_translation", { translation: t.translation }));
+        });
+        state.examples.forEach((e) => {
+            followUps.push(
+                postSubItem(word.id, "add_word_example", { sentence: e.sentence, translation: e.translation })
+            );
+        });
+        state.forms.forEach((f) => {
+            followUps.push(postSubItem(word.id, "add_word_form", { name: f.name, form: f.form }));
+        });
+        state.prepositions.forEach((p) => {
+            followUps.push(
+                postSubItem(word.id, "add_word_preposition_and_case_with_translation", {
+                    preposition: p.preposition,
+                    case: p.case,
+                    translation: p.translation || null,
+                    example: p.example || null,
+                })
+            );
+        });
+        if (collectionId) {
+            followUps.push(
+                apiFetch(`/api/collections/${collectionId}/add_word/`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ word_id: word.id }),
+                })
+            );
+        }
+
+        await Promise.all(followUps);
+
+        hideModal();
+        showToast("Слово добавлено");
+        if (onSavedCallback) {
+            onSavedCallback();
+        }
+    }
+
+    async function submitEdit(state) {
+        const patch = {};
+        if (state.definition !== originalWord.definition) {
+            patch.definition = state.definition;
+        }
+        if (Number(state.partOfSpeechId) !== originalWord.part_of_speech_id) {
+            patch.part_of_speech_id = Number(state.partOfSpeechId);
+        }
+        if (state.genusId !== (originalWord.genus_id ?? null)) {
+            patch.genus_id = state.genusId;
+        }
+
+        if (Object.keys(patch).length > 0) {
+            const response = await apiFetch(`/api/words/${editingWordId}/`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(patch),
+            });
+            if (!response.ok) {
+                showError("Не удалось сохранить изменения. Попробуйте ещё раз.");
+                return;
+            }
+        }
+
+        const translationsDiff = diffRows(state.translations, originalWord.translations || [], ["translation"]);
+        const examplesDiff = diffRows(state.examples, originalWord.examples || [], ["sentence", "translation"]);
+        const formsDiff = diffRows(state.forms, originalWord.forms || [], ["name", "form"]);
+        const prepositionsDiff = diffRows(
+            state.prepositions,
+            originalWord.prepositions_and_cases_with_translations || [],
+            ["preposition", "case", "translation", "example"]
+        );
+
+        const followUps = [];
+
+        translationsDiff.toRemove.forEach((id) => {
+            followUps.push(deleteSubItem(editingWordId, "remove_word_translation", id));
+        });
+        translationsDiff.toAdd.forEach((t) => {
+            followUps.push(postSubItem(editingWordId, "add_word_translation", { translation: t.translation }));
+        });
+
+        examplesDiff.toRemove.forEach((id) => {
+            followUps.push(deleteSubItem(editingWordId, "remove_word_example", id));
+        });
+        examplesDiff.toAdd.forEach((e) => {
+            followUps.push(
+                postSubItem(editingWordId, "add_word_example", { sentence: e.sentence, translation: e.translation })
+            );
+        });
+
+        formsDiff.toRemove.forEach((id) => {
+            followUps.push(deleteSubItem(editingWordId, "remove_word_form", id));
+        });
+        formsDiff.toAdd.forEach((f) => {
+            followUps.push(postSubItem(editingWordId, "add_word_form", { name: f.name, form: f.form }));
+        });
+
+        prepositionsDiff.toRemove.forEach((id) => {
+            followUps.push(deleteSubItem(editingWordId, "remove_word_preposition_and_case_with_translation", id));
+        });
+        prepositionsDiff.toAdd.forEach((p) => {
+            followUps.push(
+                postSubItem(editingWordId, "add_word_preposition_and_case_with_translation", {
+                    preposition: p.preposition,
+                    case: p.case,
+                    translation: p.translation || null,
+                    example: p.example || null,
+                })
+            );
+        });
+
+        await Promise.all(followUps);
+
+        hideModal();
+        if (Object.keys(patch).length > 0 || followUps.length > 0) {
+            showToast("Слово обновлено");
+        }
+        if (onSavedCallback) {
+            onSavedCallback();
+        }
+    }
+
+    async function submit() {
+        els.error.classList.remove("is-visible");
+
+        const state = collectFormState();
+
+        if (!state.definition || !state.partOfSpeechId) {
+            showError("Укажите слово и часть речи.");
+            return;
+        }
 
         els.submit.disabled = true;
 
         try {
-            const response = await apiFetch("/api/words/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    definition,
-                    part_of_speech_id: Number(partOfSpeechId),
-                    genus_id: genusId,
-                }),
-            });
-
-            if (!response.ok) {
-                showError("Не удалось сохранить слово. Попробуйте ещё раз.");
-                return;
-            }
-
-            const word = await response.json();
-            const followUps = [];
-
-            translations.forEach((t) => {
-                followUps.push(
-                    apiFetch(`/api/words/${word.id}/add_word_translation/`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(t),
-                    })
-                );
-            });
-            examples.forEach((e) => {
-                followUps.push(
-                    apiFetch(`/api/words/${word.id}/add_word_example/`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(e),
-                    })
-                );
-            });
-            forms.forEach((f) => {
-                followUps.push(
-                    apiFetch(`/api/words/${word.id}/add_word_form/`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(f),
-                    })
-                );
-            });
-            prepositions.forEach((p) => {
-                followUps.push(
-                    apiFetch(`/api/words/${word.id}/add_word_preposition_and_case_with_translation/`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(p),
-                    })
-                );
-            });
-            if (collectionId) {
-                followUps.push(
-                    apiFetch(`/api/collections/${collectionId}/add_word/`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ word_id: word.id }),
-                    })
-                );
-            }
-
-            await Promise.all(followUps);
-
-            close();
-            showToast("Слово добавлено");
-            if (onSavedCallback) {
-                onSavedCallback();
+            if (mode === "edit") {
+                await submitEdit(state);
+            } else {
+                await submitCreate(state);
             }
         } catch (err) {
             showError("Не удалось сохранить слово. Попробуйте ещё раз.");
@@ -369,5 +604,5 @@ const AddWord = (function () {
         }
     }
 
-    return { init, open };
+    return { init, open, openForEdit };
 })();
